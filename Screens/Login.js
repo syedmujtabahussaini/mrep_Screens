@@ -1,28 +1,4 @@
-// import React from "react";
-// import { View, Text, TouchableOpacity } from "react-native";
-// import { useNavigation } from "@react-navigation/native";
-
-// export default function Login() {
-//   const navigation = useNavigation();
-//   return (
-//     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-//       <Text>This Is Login Screen</Text>
-
-//       <TouchableOpacity
-//         style={{ backgroundColor: "blue", padding: 20, marginVertical: 10 }}
-//         onPress={() => navigation.navigate("DrawerNavigator")}
-//       >
-//         <Text style={{ color: "#fff" }}>Login</Text>
-//       </TouchableOpacity>
-
-//       <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-//         <Text style={{ color: "red" }}>New User Signup</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// }
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   SafeAreaView,
@@ -31,12 +7,43 @@ import {
   Text,
   TouchableOpacity,
   TextInput,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 export default function Example() {
   const [form, setForm] = useState({ email: "", password: "" });
   const navigation = useNavigation();
+
+  //navigation.navigate("DrawerNavigator");
+  const handlerLogin = async () => {
+    if (!form.email || !form.password) {
+      Alert.alert("Authorization", "User ID and password are required");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://86.48.3.100:1337/api/user-mstrs?filters[$and][0][user_id][$eq]=${form.email}&filters[$and][1][password][$eq]=${form.password}`
+      );
+      if (!response.ok) {
+        throw new Error(`Http error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log("Original Response Data:", data.data);
+      if (data.data.length === 1) {
+        console.log("sucess");
+        navigation.navigate("DrawerNavigator");
+      } else {
+        Alert.alert("Authorization", "Invalid Id or Password.");
+      }
+
+      // rest of the code
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#e8ecf4" }}>
       <View style={styles.container}>
@@ -90,11 +97,7 @@ export default function Example() {
           </View>
 
           <View style={styles.formAction}>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate("DrawerNavigator");
-              }}
-            >
+            <TouchableOpacity onPress={handlerLogin}>
               <View style={styles.btn}>
                 <Text style={styles.btnText}>Sign in</Text>
               </View>
