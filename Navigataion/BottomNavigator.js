@@ -16,15 +16,14 @@ export default function HomeScreen() {
   return (
     <Tab.Navigator
       shifting={true}
-      activeColor="#00aea2"
-      barStyle={{ backgroundColor: "#95a5a6" }}
+      // activeColor="#00aea2"
+      // barStyle={{ backgroundColor: "#95a5a6" }}
     >
       <Tab.Screen
         name="Dashboard1"
         component={Home}
         options={{
           tabBarIcon: () => <IconContainer name="home" />,
-          tabBarColor: "#3449eb",
         }}
       />
       <Tab.Screen
@@ -32,7 +31,6 @@ export default function HomeScreen() {
         component={Profile}
         options={{
           tabBarIcon: () => <IconContainer name="person" />,
-          tabBarColor: "purple",
         }}
       />
       <Tab.Screen
@@ -40,7 +38,6 @@ export default function HomeScreen() {
         component={Settings}
         options={{
           tabBarIcon: () => <IconContainer name="settings" />,
-          tabBarColor: "red",
         }}
       />
     </Tab.Navigator>
@@ -48,5 +45,5 @@ export default function HomeScreen() {
 }
 
 const IconContainer = (props) => {
-  return <IonicIcons name={props.name} size={30} color={"#3449eb"} />;
+  return <IonicIcons name={props.name} size={25} color={"#07a9e3"} />;
 };

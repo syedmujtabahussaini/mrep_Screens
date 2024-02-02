@@ -11,17 +11,16 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-export default function Example() {
+export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const navigation = useNavigation();
 
-  //navigation.navigate("DrawerNavigator");
   const handlerLogin = async () => {
+    setForm({ email: "", password: "" });
     if (!form.email || !form.password) {
       Alert.alert("Authorization", "User ID and password are required");
       return;
     }
-
     try {
       const response = await fetch(
         `http://86.48.3.100:1337/api/user-mstrs?filters[$and][0][user_id][$eq]=${form.email}&filters[$and][1][password][$eq]=${form.password}`
@@ -30,7 +29,7 @@ export default function Example() {
         throw new Error(`Http error! status: ${response.status}`);
       }
       const data = await response.json();
-      console.log("Original Response Data:", data.data);
+      console.log("Original Response Data:", data);
       if (data.data.length === 1) {
         console.log("sucess");
         navigation.navigate("DrawerNavigator");
@@ -75,7 +74,7 @@ export default function Example() {
               autoCorrect={false}
               keyboardType="email-address"
               onChangeText={(email) => setForm({ ...form, email })}
-              placeholder="john@example.com"
+              placeholder="adil@example.com"
               placeholderTextColor="#6b7280"
               style={styles.inputControl}
               value={form.email}
@@ -103,18 +102,6 @@ export default function Example() {
               </View>
             </TouchableOpacity>
           </View>
-
-          <TouchableOpacity
-            onPress={() => {
-              // handle link
-            }}
-            style={{ marginTop: "auto" }}
-          >
-            <Text style={styles.formFooter}>
-              Don't have an account?{" "}
-              <Text style={{ textDecorationLine: "underline" }}>Sign up</Text>
-            </Text>
-          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
