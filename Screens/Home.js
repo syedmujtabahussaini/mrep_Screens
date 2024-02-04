@@ -49,7 +49,11 @@ const categories = [
   // ],
 ];
 
-export default function Home() {
+export default function Home({ route }) {
+  const mio_id = route.params.mio; //login user id
+  const date = new Date();
+  // console.log(mio_id);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.top}>
@@ -61,7 +65,8 @@ export default function Home() {
           >
             <FeatherIcon name="menu" size={24} color="#1a2525" />
           </TouchableOpacity> */}
-          <Text>Name of the Person</Text>
+          <Text style={{ fontSize: 16 }}>{route.params.mioName}</Text>
+
           <TouchableOpacity
             onPress={() => {
               // handle onPress
@@ -75,16 +80,33 @@ export default function Home() {
             />
           </TouchableOpacity>
         </View>
+        <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+          Today :
+          {" " +
+            date.toLocaleString("en-GB", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}
+        </Text>
       </View>
       <ScrollView>
         <View style={styles.topContent}>
           <TouchableOpacity
             onPress={() => {
-              // handle onPress
+              console.log("attendance");
             }}
           >
             <View style={styles.banner}>
-              <Text style={styles.bannerText}>Mark Attendance</Text>
+              <Text style={styles.bannerText}>
+                Mark Attendance for
+                {" " +
+                  date.toLocaleString("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}{" "}
+              </Text>
               <FeatherIcon name="arrow-right" size={20} color="#fff" />
             </View>
           </TouchableOpacity>
@@ -118,7 +140,7 @@ export default function Home() {
           </View>
           <View style={styles.contentPlaceholder}>
             {/* Replace with your content */}
-          <Text>Hello</Text>
+            <Text>Hello</Text>
           </View>
         </View>
       </ScrollView>

@@ -12,7 +12,8 @@ import Home from "../Screens/Home";
 import Profile from "../Screens/Profile";
 import Settings from "../Screens/Settings";
 
-export default function HomeScreen() {
+export default function HomeScreen({ route }) {
+  // console.log("BottomNavigator", route.params);
   return (
     <Tab.Navigator
       shifting={true}
@@ -22,6 +23,7 @@ export default function HomeScreen() {
       <Tab.Screen
         name="Dashboard1"
         component={Home}
+        initialParams={route.params}
         options={{
           tabBarIcon: () => <IconContainer name="home" />,
         }}

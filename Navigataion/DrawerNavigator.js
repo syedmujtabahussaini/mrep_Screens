@@ -8,12 +8,17 @@ const Drawer = createDrawerNavigator();
 //
 import BottomNavigator from "./BottomNavigator";
 
-function MyDrawer() {
+function MyDrawer({ route }) {
+  // console.log("drawer", route.params);
   return (
     <Drawer.Navigator
       screenOptions={{ drawerStyle: { backgroundColor: "#bfc3c7" } }}
     >
-      <Drawer.Screen name="Dashboard" component={BottomNavigator} />
+      <Drawer.Screen
+        name="Dashboard"
+        component={BottomNavigator}
+        initialParams={route.params}
+      />
       {/* <Drawer.Screen
         name="More"
         component={() => {

@@ -29,10 +29,19 @@ export default function Login() {
         throw new Error(`Http error! status: ${response.status}`);
       }
       const data = await response.json();
-      console.log("Original Response Data:", data);
+      // console.log(
+      //   "Original Response Data:",
+      //   data.data[0].attributes.user_firstname
+      // );
       if (data.data.length === 1) {
         console.log("sucess");
-        navigation.navigate("DrawerNavigator");
+        navigation.navigate(
+          "DrawerNavigator",
+          (mioName = {
+            mio: data.data[0].id,
+            mioName: data.data[0].attributes.user_firstname,
+          })
+        );
       } else {
         Alert.alert("Authorization", "Invalid Id or Password.");
       }
