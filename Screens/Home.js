@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   SafeAreaView,
@@ -7,6 +7,7 @@ import {
   Image,
   ScrollView,
   Text,
+  Alert,
 } from "react-native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 
@@ -50,9 +51,73 @@ const categories = [
 ];
 
 export default function Home({ route }) {
+  const [attendance, setAttendance] = useState({
+    attendance_date: "",
+    attendance_status: "",
+  });
   const mio_id = route.params.mio; //login user id
   const date = new Date();
-  // console.log(mio_id);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://86.48.3.100:1337/api/user-attendances?populate[user_mstr][id]=6&filters[attendance_date][$gte]=2024-02-04&filters[attendance_date][$lt]=2024-02-05`
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+
+        const result = await response.json();
+        console.log("result", result);
+        // setAttendance(result);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        Alert.alert("Error", "Failed to fetch data. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []); // Empty dependency array ensures useEffect runs only once (similar to componentDidMount)
+
+  const handlerAttendance = async () => {
+    try {
+      const response = await fetch(
+        "http://86.48.3.100:1337/api/user-attendances",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // You can add other headers if needed
+          },
+          body: JSON.stringify({
+            data: {
+              attendance_date: date,
+              attendance_logitude: 0,
+              attendance_latitude: 0,
+              user_mstr: mio_id,
+              attendance_status: "marked",
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to post data");
+      }
+
+      // Data posted successfully
+      Alert.alert("Success", "Data posted successfully");
+      setAttendance({ attendance_status: "marked", attendance_date: date });
+    } catch (error) {
+      // Error handling
+      console.error("Error posting data:", error);
+      Alert.alert("Error", "Failed to post data. Please try again.");
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -92,24 +157,38 @@ export default function Home({ route }) {
       </View>
       <ScrollView>
         <View style={styles.topContent}>
-          <TouchableOpacity
-            onPress={() => {
-              console.log("attendance");
-            }}
-          >
-            <View style={styles.banner}>
-              <Text style={styles.bannerText}>
-                Mark Attendance for
-                {" " +
-                  date.toLocaleString("en-GB", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })}{" "}
-              </Text>
-              <FeatherIcon name="arrow-right" size={20} color="#fff" />
-            </View>
-          </TouchableOpacity>
+          {attendance.attendance_status ? (
+            <TouchableOpacity disabled={true} onPress={handlerAttendance}>
+              <View style={styles.banner}>
+                <Text style={styles.bannerText}>
+                  Attendance Marked Time in :
+                  {" " +
+                    attendance.attendance_date.toLocaleString("en-GB", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}{" "}
+                </Text>
+                <FeatherIcon name="arrow-right" size={20} color="#fff" />
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={handlerAttendance}>
+              <View style={styles.banner}>
+                <Text style={styles.bannerText}>
+                  Mark Attendance of
+                  {" " +
+                    date.toLocaleString("en-GB", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    })}{" "}
+                </Text>
+                <FeatherIcon name="arrow-right" size={20} color="#fff" />
+              </View>
+            </TouchableOpacity>
+          )}
+
           <View style={styles.categories}>
             {categories.map((row, index) => (
               <View style={styles.categoriesRow} key={index}>
