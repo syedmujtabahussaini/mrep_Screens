@@ -58,11 +58,26 @@ export default function Home({ route }) {
   const mio_id = route.params.mio; //login user id
   const date = new Date();
 
+  const currentDate = new Date();
+  const nextDay = new Date(currentDate);
+
+  nextDay.setDate(currentDate.getDate() + 1);
+
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-based
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const current_Date = formatDate(currentDate);
+  const formattedNextDay = formatDate(nextDay);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://86.48.3.100:1337/api/user-attendances?populate[user_mstr][id]=6&filters[attendance_date][$gte]=2024-02-04&filters[attendance_date][$lt]=2024-02-05`
+          `http://86.48.3.100:1337/api/user-attendances?populate[user_mstr]=*&filters[attendance_date][$gte]=${current_Date}&filters[attendance_date][$lt]=${formattedNextDay}&filters[user_mstr][id][$eq]=${mio_id}`
         );
 
         if (!response.ok) {
@@ -70,18 +85,30 @@ export default function Home({ route }) {
         }
 
         const result = await response.json();
-        console.log("result", result);
-        // setAttendance(result);
+
+        setAttendance({
+          attendance_date: result.data[0]?.attributes?.attendance_date || "",
+          attendance_status:
+            result.data[0]?.attributes?.attendance_status || "",
+        });
       } catch (error) {
         console.error("Error fetching data:", error);
         Alert.alert("Error", "Failed to fetch data. Please try again.");
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchData();
   }, []); // Empty dependency array ensures useEffect runs only once (similar to componentDidMount)
+
+  const date1 = new Date(attendance.attendance_date);
+
+  const formattedDate = date1.toLocaleDateString([], {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
+
+  console.log("Change time ", formattedDate);
 
   const handlerAttendance = async () => {
     try {
@@ -163,11 +190,10 @@ export default function Home({ route }) {
                 <Text style={styles.bannerText}>
                   Attendance Marked Time in :
                   {" " +
-                    attendance.attendance_date.toLocaleString("en-GB", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: true,
-                    })}{" "}
+                    formattedDate.slice(
+                      formattedDate.indexOf(",") + 2,
+                      formattedDate.length
+                    )}
                 </Text>
                 <FeatherIcon name="arrow-right" size={20} color="#fff" />
               </View>
@@ -182,7 +208,7 @@ export default function Home({ route }) {
                       day: "2-digit",
                       month: "2-digit",
                       year: "numeric",
-                    })}{" "}
+                    })}
                 </Text>
                 <FeatherIcon name="arrow-right" size={20} color="#fff" />
               </View>
