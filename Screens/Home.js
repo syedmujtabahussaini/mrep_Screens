@@ -10,6 +10,7 @@ import {
   Alert,
 } from "react-native";
 import FeatherIcon from "react-native-vector-icons/Feather";
+import VisitPlan_Detail from "./VisitPlan_Details";
 
 const categories = [
   [
@@ -137,7 +138,7 @@ export default function Home({ route }) {
       }
 
       // Data posted successfully
-      Alert.alert("Success", "Data posted successfully");
+      Alert.alert("Success", "Attendance has been marked!");
       setAttendance({ attendance_status: "marked", attendance_date: date });
     } catch (error) {
       // Error handling
@@ -188,7 +189,7 @@ export default function Home({ route }) {
             <TouchableOpacity disabled={true} onPress={handlerAttendance}>
               <View style={styles.banner}>
                 <Text style={styles.bannerText}>
-                  Attendance Marked Time in :
+                  Attendance Marked! TIME IN
                   {" " +
                     formattedDate.slice(
                       formattedDate.indexOf(",") + 2,
@@ -202,7 +203,7 @@ export default function Home({ route }) {
             <TouchableOpacity onPress={handlerAttendance}>
               <View style={styles.banner}>
                 <Text style={styles.bannerText}>
-                  Mark Attendance of
+                  Mark Attendance for the
                   {" " +
                     date.toLocaleString("en-GB", {
                       day: "2-digit",
@@ -243,9 +244,10 @@ export default function Home({ route }) {
               <Text style={styles.contentLink}>View all</Text>
             </TouchableOpacity>
           </View>
+
           <View style={styles.contentPlaceholder}>
             {/* Replace with your content */}
-            <Text>Hello</Text>
+            <VisitPlan_Detail />
           </View>
         </View>
       </ScrollView>
@@ -337,7 +339,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 24,
     marginTop: 8,
-    height: 420,
+    // height: 520,
   },
   contentHeader: {
     flexDirection: "row",
@@ -357,7 +359,7 @@ const styles = StyleSheet.create({
   },
   contentPlaceholder: {
     borderStyle: "dashed",
-    borderWidth: 4,
+    borderWidth: 5,
     borderColor: "#e5e7eb",
     flex: 1,
     borderRadius: 8,

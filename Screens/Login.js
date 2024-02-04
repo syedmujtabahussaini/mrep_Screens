@@ -23,7 +23,7 @@ export default function Login() {
     }
     try {
       const response = await fetch(
-        `http://86.48.3.100:1337/api/user-mstrs?filters[$and][0][user_id][$eq]=${form.email}&filters[$and][1][password][$eq]=${form.password}`
+        `http://86.48.3.100:1337/api/user-mstrs?filters[$and][0][user_id][$eqi]=${form.email}&filters[$and][1][password][$eqi]=${form.password}`
       );
       if (!response.ok) {
         throw new Error(`Http error! status: ${response.status}`);
