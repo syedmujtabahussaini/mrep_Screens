@@ -8,8 +8,11 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
+  Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+
+const { height, width } = Dimensions.get("window");
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -21,27 +24,26 @@ export default function Login() {
       Alert.alert("Authorization", "User ID and password are required");
       return;
     }
+
     try {
       const response = await fetch(
         `http://86.48.3.100:1337/api/user-mstrs?filters[$and][0][user_id][$eqi]=${form.email}&filters[$and][1][password][$eqi]=${form.password}`
       );
+
       if (!response.ok) {
         throw new Error(`Http error! status: ${response.status}`);
       }
+
       const data = await response.json();
-      // console.log(
-      //   "Original Response Data:",
-      //   data.data[0].attributes.user_firstname
-      // );
-      if (data.data.length === 1) {
-        console.log("sucess");
-        navigation.navigate(
-          "DrawerNavigator",
-          (mioName = {
-            mio: data.data[0].id,
-            mioName: data.data[0].attributes.user_firstname,
-          })
-        );
+
+      if (
+        data.data[0].attributes.user_id === form.email &&
+        data.data[0].attributes.password === form.password
+      ) {
+        navigation.navigate("DrawerNavigator", {
+          mio: data.data[0].id,
+          mioName: data.data[0].attributes.user_firstname,
+        });
       } else {
         Alert.alert("Authorization", "Invalid Id or Password.");
       }
@@ -53,64 +55,62 @@ export default function Login() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#e8ecf4" }}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Image
-            alt=""
-            resizeMode="contain"
-            style={styles.headerImg}
-            source={{
-              uri: "https://withfra.me/android-chrome-512x512.png",
-            }}
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <Image
+          alt=""
+          resizeMode="contain"
+          style={styles.headerImg}
+          source={{
+            uri: "https://withfra.me/android-chrome-512x512.png",
+          }}
+        />
+
+        <Text style={styles.title}>
+          Sign in to <Text style={{ color: "#075eec" }}>My App</Text>
+        </Text>
+
+        <Text style={styles.subtitle}>
+          Get access to your portfolio and more
+        </Text>
+      </View>
+
+      <View style={styles.form}>
+        <View style={styles.input}>
+          <Text style={styles.inputLabel}>Email address</Text>
+
+          <TextInput
+            autoCapitalize="none"
+            autoCorrect={false}
+            keyboardType="email-address"
+            onChangeText={(email) => setForm({ ...form, email })}
+            placeholder="adil@example.com"
+            placeholderTextColor="#6b7280"
+            style={styles.inputControl}
+            value={form.email}
           />
-
-          <Text style={styles.title}>
-            Sign in to <Text style={{ color: "#075eec" }}>My App</Text>
-          </Text>
-
-          <Text style={styles.subtitle}>
-            Get access to your portfolio and more
-          </Text>
         </View>
 
-        <View style={styles.form}>
-          <View style={styles.input}>
-            <Text style={styles.inputLabel}>Email address</Text>
+        <View style={styles.input}>
+          <Text style={styles.inputLabel}>Password</Text>
 
-            <TextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="email-address"
-              onChangeText={(email) => setForm({ ...form, email })}
-              placeholder="adil@example.com"
-              placeholderTextColor="#6b7280"
-              style={styles.inputControl}
-              value={form.email}
-            />
-          </View>
+          <TextInput
+            autoCorrect={false}
+            onChangeText={(password) => setForm({ ...form, password })}
+            placeholder="********"
+            placeholderTextColor="#6b7280"
+            style={styles.inputControl}
+            secureTextEntry={true}
+            value={form.password}
+          />
+        </View>
 
-          <View style={styles.input}>
-            <Text style={styles.inputLabel}>Password</Text>
-
-            <TextInput
-              autoCorrect={false}
-              onChangeText={(password) => setForm({ ...form, password })}
-              placeholder="********"
-              placeholderTextColor="#6b7280"
-              style={styles.inputControl}
-              secureTextEntry={true}
-              value={form.password}
-            />
-          </View>
-
-          <View style={styles.formAction}>
-            <TouchableOpacity onPress={handlerLogin}>
-              <View style={styles.btn}>
-                <Text style={styles.btnText}>Sign in</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
+        <View style={styles.formAction}>
+          <TouchableOpacity onPress={handlerLogin}>
+            <View style={styles.btn}>
+              <Text style={styles.btnText}>Sign in</Text>
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
@@ -119,11 +119,11 @@ export default function Login() {
 
 const styles = StyleSheet.create({
   container: {
-    top: 100,
+    flex: 1,
     padding: 24,
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
+    backgroundColor: "#e8ecf4",
+    justifyContent: "center", // Center vertically
+    // alignItems: "center", // Center horizontally
   },
   title: {
     fontSize: 27,
@@ -140,45 +140,36 @@ const styles = StyleSheet.create({
   },
   /** Header */
   header: {
-    marginVertical: 36,
+    marginVertical: height * 0.04,
   },
   headerImg: {
-    width: 80,
-    height: 80,
+    width: width * 0.2,
+    height: width * 0.2,
     alignSelf: "center",
-    marginBottom: 36,
+    marginBottom: height * 0.04,
   },
   /** Form */
   form: {
-    marginBottom: 24,
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
+    marginBottom: height * 0.03,
+    flex: 1,
   },
   formAction: {
-    marginVertical: 24,
-  },
-  formFooter: {
-    fontSize: 17,
-    fontWeight: "600",
-    color: "#222",
-    textAlign: "center",
-    letterSpacing: 0.15,
+    marginVertical: height * 0.02,
   },
   /** Input */
   input: {
-    marginBottom: 16,
+    marginBottom: height * 0.02,
   },
   inputLabel: {
     fontSize: 17,
     fontWeight: "600",
     color: "#222",
-    marginBottom: 8,
+    marginBottom: height * 0.01,
   },
   inputControl: {
-    height: 44,
+    height: height * 0.05,
     backgroundColor: "#fff",
-    paddingHorizontal: 16,
+    paddingHorizontal: width * 0.04,
     borderRadius: 12,
     fontSize: 15,
     fontWeight: "500",
@@ -190,8 +181,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: height * 0.015,
+    paddingHorizontal: width * 0.04,
     borderWidth: 1,
     backgroundColor: "#075eec",
     borderColor: "#075eec",

@@ -9,6 +9,7 @@ import {
   Text,
   Alert,
 } from "react-native";
+import * as Location from "expo-location";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import VisitPlan_Detail from "./VisitPlan_Details";
 
@@ -52,6 +53,7 @@ const categories = [
 ];
 
 export default function Home({ route }) {
+  const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [attendance, setAttendance] = useState({
     attendance_date: "",
     attendance_status: "",
@@ -73,6 +75,31 @@ export default function Home({ route }) {
 
   const current_Date = formatDate(currentDate);
   const formattedNextDay = formatDate(nextDay);
+
+  const getCurrentLocation = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        throw new Error("Permission to access location was denied");
+      }
+
+      const locationData = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+      const { latitude, longitude } = locationData.coords;
+      setLocation({ latitude, longitude });
+    } catch (error) {
+      handleError("Error getting current location");
+    }
+  };
+
+  const handleError = (errorMessage) => {
+    Alert.alert("Error", errorMessage, [{ text: "OK" }]);
+  };
+
+  useEffect(() => {
+    getCurrentLocation();
+  }, []); // Empty dependency array ensures the useEffect runs once, similar to componentDidMount
 
   useEffect(() => {
     const fetchData = async () => {
@@ -109,9 +136,10 @@ export default function Home({ route }) {
     hour12: true,
   });
 
-  console.log("Change time ", formattedDate);
+  // console.log("Change time ", formattedDate);
 
   const handlerAttendance = async () => {
+    await getCurrentLocation(); // Triggering the update manually
     try {
       const response = await fetch(
         "http://86.48.3.100:1337/api/user-attendances",
@@ -124,8 +152,8 @@ export default function Home({ route }) {
           body: JSON.stringify({
             data: {
               attendance_date: date,
-              attendance_logitude: 0,
-              attendance_latitude: 0,
+              attendance_logitude: location.longitude,
+              attendance_latitude: location.latitude,
               user_mstr: mio_id,
               attendance_status: "marked",
             },

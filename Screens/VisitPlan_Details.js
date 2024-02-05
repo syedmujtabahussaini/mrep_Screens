@@ -72,7 +72,7 @@ export default function VisitPlan_Detail({ navigation }) {
     fetchData();
   }, []);
 
-  console.log(data[0].visitplan_start);
+  // console.log(data[0].visitplan_start);
   // console.log("Data===>", data[0].visitplan_start);
 
   return (

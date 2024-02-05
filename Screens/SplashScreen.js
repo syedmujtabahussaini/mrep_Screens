@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   SafeAreaView,
@@ -6,15 +6,41 @@ import {
   Image,
   Text,
   TouchableOpacity,
+  Alert,
+  Dimensions,
 } from "react-native";
+import * as Location from "expo-location";
+
+const { height, width } = Dimensions.get("window");
 
 export default function Example() {
+  const [heroImageHeight, setHeroImageHeight] = useState(height * 0.5);
+
+  useEffect(() => {
+    const requestLocationPermission = async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          throw new Error("Permission to access location was denied");
+        }
+      } catch (error) {
+        handleError(error.message);
+      }
+    };
+
+    const handleError = (errorMessage) => {
+      Alert.alert("Error", errorMessage, [{ text: "OK" }]);
+    };
+
+    requestLocationPermission();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.hero}>
         <Image
           source={{ uri: "https://withfra.me/shared/Landing.3.png" }}
-          style={styles.heroImage}
+          style={[styles.heroImage, { height: heroImageHeight }]}
           resizeMode="contain"
         />
       </View>
@@ -74,7 +100,6 @@ const styles = StyleSheet.create({
   },
   heroImage: {
     width: "100%",
-    height: 400,
   },
   /** Content */
   content: {
