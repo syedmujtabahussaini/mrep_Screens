@@ -17,8 +17,8 @@ export default function HomeScreen({ route }) {
   return (
     <Tab.Navigator
       shifting={true}
-      // activeColor="#00aea2"
-      // barStyle={{ backgroundColor: "#95a5a6" }}
+      activeColor="#075eec"
+      barStyle={{ backgroundColor: "#fff", height: 65 }}
     >
       <Tab.Screen
         name="Dashboard1"
@@ -47,5 +47,5 @@ export default function HomeScreen({ route }) {
 }
 
 const IconContainer = (props) => {
-  return <IonicIcons name={props.name} size={25} color={"#07a9e3"} />;
+  return <IonicIcons name={props.name} size={22} color={"#075eec"} />;
 };

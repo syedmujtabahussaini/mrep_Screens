@@ -7,6 +7,8 @@ import DrawerNavigator from "../Navigataion/DrawerNavigator";
 import SplashScreen from "../Screens/SplashScreen";
 import LoginScreen from "../Screens/Login";
 import SignupScreen from "../Screens/Signup";
+import VisitPlan from "../Screens/VisitPlan";
+import VisitPlan_Detail from "../Screens/VisitPlan_Details";
 
 const Stack = createNativeStackNavigator();
 
@@ -43,6 +45,17 @@ export default function StackNavigator() {
           name="DrawerNavigator"
           component={DrawerNavigator}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="VisitPlan"
+          component={VisitPlan}
+          options={{ headerShown: true, title: "Creating Day Plan" }}
+        />
+
+        <Stack.Screen
+          name="VisitPlanDetail"
+          component={VisitPlan_Detail}
+          options={{ headerShown: true, title: "Day Plan Details" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

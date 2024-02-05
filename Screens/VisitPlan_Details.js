@@ -114,6 +114,7 @@ export default function VisitPlan_Detail({ navigation }) {
                         <Text style={styles.cardStatsItemText}>
                           Self: {visitplan_self ? "YES" : "NO"}
                         </Text>
+
                         <Text style={styles.cardStatsItemText}>
                           RM: {visitplan_rm ? "YES" : "NO"}
                         </Text>
@@ -184,11 +185,11 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
     backgroundColor: "white",
-    marginBottom: 24,
-    shadowColor: "#000",
+    marginBottom: 14,
+    shadowColor: "blue",
     shadowOffset: {
-      width: 0,
-      height: 2,
+      width: 2,
+      height: 4,
     },
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
@@ -201,41 +202,41 @@ const styles = StyleSheet.create({
   cardImg: {
     width: "100%",
     height: 180,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
   },
   cardBody: {
     paddingVertical: 16,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
   },
   cardHeader: {
     flexDirection: "col",
-    alignItems: "flex-start",
+    alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 12,
+    marginBottom: 8,
   },
   cardTitle: {
-    fontSize: 19,
+    fontSize: 14,
     fontWeight: "600",
-    color: "#2d2d2d",
+    color: "black",
   },
   cardPrice: {
-    fontSize: 20,
+    fontSize: 14,
     fontWeight: "700",
-    color: "#444",
+    color: "black",
   },
   cardStats: {
-    paddingBottom: 8,
+    paddingBottom: 5,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
-    marginHorizontal: -12,
+    marginHorizontal: -14,
   },
   cardStatsItem: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-evenly",
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -254,9 +255,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
   },
   cardFooterText: {
-    // flexDirection: "row",
-    // alignItems: "center",
-    // justifyContent: "space-between",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 3,
     fontSize: 14,
     fontWeight: "600",
@@ -274,8 +275,8 @@ const styles = StyleSheet.create({
     borderColor: "#ad0a23",
   },
   btnText: {
-    fontSize: 17,
-    lineHeight: 20,
+    fontSize: 14,
+    lineHeight: 15,
     fontWeight: "600",
     color: "#fff",
   },

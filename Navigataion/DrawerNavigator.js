@@ -19,6 +19,7 @@ function MyDrawer({ route }) {
         component={BottomNavigator}
         initialParams={route.params}
       />
+
       {/* <Drawer.Screen
         name="More"
         component={() => {

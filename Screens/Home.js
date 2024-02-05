@@ -12,6 +12,7 @@ import {
 import * as Location from "expo-location";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import VisitPlan_Detail from "./VisitPlan_Details";
+import { useNavigation } from "@react-navigation/native";
 
 const categories = [
   [
@@ -53,6 +54,7 @@ const categories = [
 ];
 
 export default function Home({ route }) {
+  const navigation = useNavigation();
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [attendance, setAttendance] = useState({
     attendance_date: "",
@@ -175,19 +177,17 @@ export default function Home({ route }) {
     }
   };
 
+  const handlerLinks = (item) => {
+    if ((item = "Day Plan")) {
+      navigation.navigate("VisitPlan");
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.top}>
         <View style={styles.header}>
-          {/* <TouchableOpacity
-            onPress={() => {
-              // handle onPress
-            }}
-          >
-            <FeatherIcon name="menu" size={24} color="#1a2525" />
-          </TouchableOpacity> */}
           <Text style={{ fontSize: 16 }}>{route.params.mioName}</Text>
-
           <TouchableOpacity
             onPress={() => {
               // handle onPress
@@ -206,65 +206,66 @@ export default function Home({ route }) {
           {" " +
             date.toLocaleString("en-GB", {
               day: "2-digit",
-              month: "2-digit",
+              month: "short",
               year: "numeric",
             })}
         </Text>
       </View>
-      <ScrollView>
-        <View style={styles.topContent}>
-          {attendance.attendance_status ? (
-            <TouchableOpacity disabled={true} onPress={handlerAttendance}>
-              <View style={styles.banner}>
-                <Text style={styles.bannerText}>
-                  Attendance Marked! TIME IN
-                  {" " +
-                    formattedDate.slice(
-                      formattedDate.indexOf(",") + 2,
-                      formattedDate.length
-                    )}
-                </Text>
-                <FeatherIcon name="arrow-right" size={20} color="#fff" />
-              </View>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity onPress={handlerAttendance}>
-              <View style={styles.banner}>
-                <Text style={styles.bannerText}>
-                  Mark Attendance for the
-                  {" " +
-                    date.toLocaleString("en-GB", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                    })}
-                </Text>
-                <FeatherIcon name="arrow-right" size={20} color="#fff" />
-              </View>
-            </TouchableOpacity>
-          )}
 
-          <View style={styles.categories}>
-            {categories.map((row, index) => (
-              <View style={styles.categoriesRow} key={index}>
-                {row.map((item) => (
-                  <TouchableOpacity
-                    style={styles.category}
-                    key={item.name}
-                    onPress={() => {
-                      // handle onPress
-                    }}
-                  >
-                    <View style={styles.categoryIcon}>
-                      <Text style={{ fontSize: 36 }}>{item.icon}</Text>
-                    </View>
-                    <Text style={styles.categoryText}>{item.name}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            ))}
-          </View>
+      <View style={styles.topContent}>
+        {attendance.attendance_status ? (
+          <TouchableOpacity disabled={true} onPress={handlerAttendance}>
+            <View style={styles.banner}>
+              <Text style={styles.bannerText}>
+                Attendance Marked! TIME IN
+                {" " +
+                  formattedDate.slice(
+                    formattedDate.indexOf(",") + 2,
+                    formattedDate.length
+                  )}
+              </Text>
+              <FeatherIcon name="arrow-right" size={20} color="#fff" />
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={handlerAttendance}>
+            <View style={styles.banner}>
+              <Text style={styles.bannerText}>
+                Mark Attendance for the
+                {" " +
+                  date.toLocaleString("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
+              </Text>
+              <FeatherIcon name="arrow-right" size={20} color="#fff" />
+            </View>
+          </TouchableOpacity>
+        )}
+
+        <View style={styles.categories}>
+          {categories.map((row, index) => (
+            <View style={styles.categoriesRow} key={index}>
+              {row.map((item) => (
+                <TouchableOpacity
+                  style={styles.category}
+                  key={item.name}
+                  onPress={() => {
+                    handlerLinks(item.name);
+                  }}
+                >
+                  <View style={styles.categoryIcon}>
+                    <Text style={{ fontSize: 36 }}>{item.icon}</Text>
+                  </View>
+                  <Text style={styles.categoryText}>{item.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          ))}
         </View>
+      </View>
+      <ScrollView>
         <View style={styles.content}>
           <View style={styles.contentHeader}>
             <Text style={styles.contentTitle}>Today's Visit Plans</Text>
@@ -292,6 +293,7 @@ const styles = StyleSheet.create({
   top: {
     paddingHorizontal: 24,
     paddingVertical: 8,
+    // backgroundColor: "lightblue",
   },
   topContent: {
     paddingHorizontal: 24,
@@ -309,12 +311,12 @@ const styles = StyleSheet.create({
   },
   /** Banner */
   banner: {
-    marginTop: 12,
+    marginTop: 3,
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    backgroundColor: "#07a9e3",
+    backgroundColor: "#075eec",
     padding: 16,
     borderRadius: 16,
   },
@@ -327,7 +329,7 @@ const styles = StyleSheet.create({
   },
   /** Categories */
   categories: {
-    marginTop: 12,
+    marginTop: 3,
   },
   categoriesRow: {
     display: "flex",
@@ -347,14 +349,14 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: "#fff",
     paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     fontSize: 36,
   },
   categoryText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "600",
     color: "#505050",
     marginTop: 8,
@@ -364,8 +366,8 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingHorizontal: 24,
-    paddingBottom: 24,
+    paddingHorizontal: 10,
+    paddingBottom: 10,
     marginTop: 8,
     // height: 520,
   },
@@ -376,7 +378,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   contentTitle: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: "700",
     color: "#505050",
   },

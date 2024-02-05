@@ -19,9 +19,9 @@ export default function Login() {
   const navigation = useNavigation();
 
   const handlerLogin = async () => {
-    setForm({ email: "", password: "" });
+    setForm({ password: "" });
     if (!form.email || !form.password) {
-      Alert.alert("Authorization", "User ID and password are required");
+      Alert.alert("Authorization", "User ID and password is required");
       return;
     }
 
@@ -47,8 +47,6 @@ export default function Login() {
       } else {
         Alert.alert("Authorization", "Invalid Id or Password.");
       }
-
-      // rest of the code
     } catch (error) {
       console.log(error.message);
     }
