@@ -60,7 +60,9 @@ export default function VisitPlan_Detail({ navigation }) {
               visitplan_sm: cv.attributes.visitplan_sm,
               visitplan_nsm: cv.attributes.visitplan_nsm,
               visitplan_ceo: cv.attributes.visitplan_ceo,
+              site_id: cv.attributes.site_mstr.data.id,
               site_name: cv.attributes.site_mstr.data.attributes.site_name,
+              doctor_id: cv.attributes.doctor_mstr.data.id,
               doctor_firstname:
                 cv.attributes.doctor_mstr.data.attributes.doctor_firstname,
             };
@@ -92,7 +94,9 @@ export default function VisitPlan_Detail({ navigation }) {
               visitplan_sm,
               visitplan_nsm,
               visitplan_ceo,
+              site_id,
               site_name,
+              doctor_id,
               doctor_firstname,
             },
             index
@@ -100,8 +104,21 @@ export default function VisitPlan_Detail({ navigation }) {
             return (
               <TouchableOpacity
                 key={index}
-                onPress={(e) => {
-                  console.log("record", id);
+                onPress={() => {
+                  navigation.navigate("VisitPlan", {
+                    id,
+                    visitplan_start,
+                    visitplan_end,
+                    visitplan_self,
+                    visitplan_rm,
+                    visitplan_sm,
+                    visitplan_nsm,
+                    visitplan_ceo,
+                    site_id,
+                    site_name,
+                    doctor_id,
+                    doctor_firstname,
+                  });
                 }}
               >
                 <View style={styles.card}>

@@ -233,9 +233,7 @@ export default function VisitPlan({ route }) {
     ToastAndroid.show("Saved Record ", ToastAndroid.SHORT);
     console.log(JSON.stringify(data));
   };
-
-  console.log("route", route.params);
-
+  console.log("detail to master", route.params);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <View style={styles.container}>
@@ -305,7 +303,7 @@ export default function VisitPlan({ route }) {
                   valueField="site_id"
                   placeholder={!isFocus ? "Select Site....." : "..."}
                   searchPlaceholder="Search..."
-                  // value={value}
+                  value={route.params.site_id}
                   onFocus={() => setIsFocus(true)}
                   onBlur={() => setIsFocus(false)}
                   onChange={(item) => {
