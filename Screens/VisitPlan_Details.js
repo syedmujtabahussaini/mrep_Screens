@@ -8,6 +8,7 @@ import {
   ScrollView,
   Image,
 } from "react-native";
+
 import FeatherIcon from "react-native-vector-icons/Feather";
 
 export default function VisitPlan_Detail({ navigation }) {
@@ -83,6 +84,7 @@ export default function VisitPlan_Detail({ navigation }) {
         {data.map(
           (
             {
+              id,
               visitplan_start,
               visitplan_end,
               visitplan_self,
@@ -98,8 +100,8 @@ export default function VisitPlan_Detail({ navigation }) {
             return (
               <TouchableOpacity
                 key={index}
-                onPress={() => {
-                  console.log("hello from detail");
+                onPress={(e) => {
+                  console.log("record", id);
                 }}
               >
                 <View style={styles.card}>

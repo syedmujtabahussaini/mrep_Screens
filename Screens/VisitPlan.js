@@ -234,7 +234,7 @@ export default function VisitPlan({ route }) {
     console.log(JSON.stringify(data));
   };
 
-  // console.log("route", route.params);
+  console.log("route", route.params);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
