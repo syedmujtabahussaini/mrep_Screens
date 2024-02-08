@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
 import IonicIcons from "react-native-vector-icons/Ionicons";
+
 // import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 
@@ -10,7 +11,8 @@ const Tab = createMaterialBottomTabNavigator();
 // import screens
 import Home from "../Screens/Home";
 import Profile from "../Screens/Profile";
-import Settings from "../Screens/Settings";
+import Logout from "../components/Logout";
+import VisitPlan from "../Screens/VisitPlan";
 
 export default function HomeScreen({ route }) {
   // console.log("BottomNavigator", route.params);
@@ -21,13 +23,22 @@ export default function HomeScreen({ route }) {
       barStyle={{ backgroundColor: "#fff", height: 65 }}
     >
       <Tab.Screen
-        name="Dashboard1"
+        name="Dashboard "
         component={Home}
         initialParams={route.params}
         options={{
           tabBarIcon: () => <IconContainer name="home" />,
         }}
       />
+      <Tab.Screen
+        name="DayPlan "
+        component={VisitPlan}
+        initialParams={route.params}
+        options={{
+          tabBarIcon: () => <IconContainer name="today-sharp" />,
+        }}
+      />
+
       <Tab.Screen
         name="Profile"
         component={Profile}
@@ -36,10 +47,10 @@ export default function HomeScreen({ route }) {
         }}
       />
       <Tab.Screen
-        name="Settings"
-        component={Settings}
+        name="Logout"
+        component={Logout}
         options={{
-          tabBarIcon: () => <IconContainer name="settings" />,
+          tabBarIcon: () => <IconContainer name="log-out-sharp" />,
         }}
       />
     </Tab.Navigator>

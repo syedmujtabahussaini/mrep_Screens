@@ -76,7 +76,7 @@ export default function VisitPlan_Detail({ navigation }) {
   // console.log("Data===>", data[0].visitplan_start);
 
   return (
-    <SafeAreaView style={{ backgroundColor: "#f2f2f2" }}>
+    <SafeAreaView style={{ backgroundColor: "#fff" }}>
       <ScrollView contentContainerStyle={styles.container}>
         {/* <Text style={styles.title}>Available Cars</Text> */}
 
@@ -99,7 +99,7 @@ export default function VisitPlan_Detail({ navigation }) {
               <TouchableOpacity
                 key={index}
                 onPress={() => {
-                  // handle onPress
+                  console.log("hello from detail");
                 }}
               >
                 <View style={styles.card}>
@@ -111,22 +111,25 @@ export default function VisitPlan_Detail({ navigation }) {
 
                     <View style={styles.cardStats}>
                       <View style={styles.cardStatsItem}>
-                        <Text style={styles.cardStatsItemText}>
-                          Self: {visitplan_self ? "YES" : "NO"}
-                        </Text>
+                        {visitplan_self && (
+                          <Text style={styles.cardStatsItemText}>Self:Yes</Text>
+                        )}
 
-                        <Text style={styles.cardStatsItemText}>
-                          RM: {visitplan_rm ? "YES" : "NO"}
-                        </Text>
-                        <Text style={styles.cardStatsItemText}>
-                          SM: {visitplan_sm ? "YES" : "NO"}
-                        </Text>
-                        <Text style={styles.cardStatsItemText}>
-                          NSM: {visitplan_nsm ? "YES" : "NO"}
-                        </Text>
-                        <Text style={styles.cardStatsItemText}>
-                          CEO: {visitplan_ceo ? "YES" : "NO"}
-                        </Text>
+                        {visitplan_rm && (
+                          <Text style={styles.cardStatsItemText}>RM:Yes</Text>
+                        )}
+
+                        {visitplan_sm && (
+                          <Text style={styles.cardStatsItemText}>SM:Yes</Text>
+                        )}
+
+                        {visitplan_nsm && (
+                          <Text style={styles.cardStatsItemText}>NSM: Yes</Text>
+                        )}
+
+                        {visitplan_ceo && (
+                          <Text style={styles.cardStatsItemText}>CEO: Yes</Text>
+                        )}
                       </View>
 
                       <View style={styles.cardStatsItem}>
@@ -174,6 +177,12 @@ export default function VisitPlan_Detail({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     padding: 24,
+    borderStyle: "dashed",
+    borderWidth: 5,
+    borderColor: "#e5e7eb",
+    margin: 10,
+    borderRadius: 12,
+    backgroundColor: "#f0f1f7",
   },
   title: {
     fontSize: 25,

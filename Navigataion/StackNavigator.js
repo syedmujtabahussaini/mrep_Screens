@@ -9,6 +9,7 @@ import LoginScreen from "../Screens/Login";
 import SignupScreen from "../Screens/Signup";
 import VisitPlan from "../Screens/VisitPlan";
 import VisitPlan_Detail from "../Screens/VisitPlan_Details";
+import { BottomNavigation } from "react-native-paper";
 
 const Stack = createNativeStackNavigator();
 

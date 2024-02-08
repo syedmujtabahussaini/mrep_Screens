@@ -13,7 +13,6 @@ import * as Location from "expo-location";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import VisitPlan_Detail from "./VisitPlan_Details";
 import { useNavigation } from "@react-navigation/native";
-
 const categories = [
   [
     {
@@ -388,9 +387,9 @@ const styles = StyleSheet.create({
     color: "#505050",
   },
   contentPlaceholder: {
-    borderStyle: "dashed",
-    borderWidth: 5,
-    borderColor: "#e5e7eb",
+    // borderStyle: "dashed",
+    // borderWidth: 5,
+    // borderColor: "#e5e7eb",
     flex: 1,
     borderRadius: 8,
   },

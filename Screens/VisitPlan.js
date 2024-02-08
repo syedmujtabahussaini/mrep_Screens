@@ -13,10 +13,11 @@ import {
   TextInput,
   Switch,
   ToastAndroid,
+  Alert,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-export default function VisitPlan() {
+export default function VisitPlan({ route }) {
   const [isFocus, setIsFocus] = useState(false);
   const [visitPlanSelf, setVisitPlanSelf] = useState(false);
   const [visitPlanRm, setVisitPlanRm] = useState(false);
@@ -67,11 +68,23 @@ export default function VisitPlan() {
   const onChangeTimeEnd = (e, selectedDate) => {
     setShowEndTime(false);
     setEndDate((prevDate) => {
-      // If selectedDate is available, update only the time part
       if (selectedDate) {
-        const newDate = new Date(prevDate);
-        newDate.setHours(selectedDate.getHours(), selectedDate.getMinutes());
-        return newDate;
+        // Create new Date objects for comparison
+        const prevDateTime = new Date(prevDate);
+        const selectedDateTime = new Date(selectedDate);
+
+        // If selected time is greater than or equal to current time
+        if (selectedDateTime >= prevDateTime) {
+          // Update only the time part
+          const newDate = new Date(prevDate);
+          newDate.setHours(selectedDate.getHours(), selectedDate.getMinutes());
+          return newDate;
+        } else {
+          // If selected time is less than current time, return the current date unchanged
+          // You can also set an error state or display an error message here
+          Alert.alert("Selected time must be greater than Visit Start time!.");
+          return prevDate;
+        }
       }
       // If selectedDate is falsy, return the current date unchanged
       return prevDate;
@@ -85,28 +98,28 @@ export default function VisitPlan() {
     confirmPassword: "",
   });
 
-  useEffect(() => {
-    fetch("http://86.48.3.100:1337/api/user-mstrs")
-      .then((res) => res.json())
-      .then((data) =>
-        setUserdata(
-          data.data.map((cv) => {
-            return {
-              id: cv.id,
-              user_firstname: cv.attributes.user_firstname,
-            };
-          })
-        )
-      )
-      .catch((error) => console.log(error.message));
-  }, []);
+  // useEffect(() => {
+  //   fetch("http://86.48.3.100:1337/api/user-mstrs")
+  //     .then((res) => res.json())
+  //     .then((data) =>
+  //       setUserdata(
+  //         data.data.map((cv) => {
+  //           return {
+  //             id: cv.id,
+  //             user_firstname: cv.attributes.user_firstname,
+  //           };
+  //         })
+  //       )
+  //     )
+  //     .catch((error) => console.log(error.message));
+  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
           "http://86.48.3.100:1337/api/userarea-accesses?populate[user_mstr]=*&populate[area_mstrs][populate][site_mstrs][populate]=*&filters[user_mstr][id][$eq]=" +
-            user
+            route.params.mio
         );
 
         if (!response.ok) {
@@ -221,6 +234,8 @@ export default function VisitPlan() {
     console.log(JSON.stringify(data));
   };
 
+  // console.log("route", route.params);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <View style={styles.container}>
@@ -231,8 +246,17 @@ export default function VisitPlan() {
         <KeyboardAwareScrollView>
           <View style={styles.form}>
             <View style={styles.input}>
-              <Text style={styles.inputLabel}>User full name</Text>
-              <View>
+              {/* <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "600",
+                  color: "#222",
+                  borderBlockColor: "black",
+                }}
+              >
+                {route.params.mioName}
+              </Text> */}
+              {/*  <View>
                 <Dropdown
                   style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
                   placeholderStyle={styles.placeholderStyle}
@@ -262,7 +286,7 @@ export default function VisitPlan() {
                     />
                   )}
                 />
-              </View>
+              </View> */}
             </View>
 
             <View style={styles.input}>
@@ -348,6 +372,7 @@ export default function VisitPlan() {
                   mode={"date"}
                   is12Hour={true}
                   onChange={onChange}
+                  display="spinner"
                 />
               )}
 
@@ -357,6 +382,7 @@ export default function VisitPlan() {
                   mode={"time"}
                   is12Hour={true}
                   onChange={onChangeTime}
+                  display="spinner"
                 />
               )}
 
@@ -385,6 +411,8 @@ export default function VisitPlan() {
                   mode={"date"}
                   is12Hour={true}
                   onChange={onChangeEnd}
+                  display="default"
+                  backgroundColor={"#fff"}
                 />
               )}
 
@@ -418,9 +446,9 @@ export default function VisitPlan() {
               <Switch
                 onValueChange={toggleSwitchSelf}
                 value={visitPlanSelf}
-                style={{ transform: [{ scaleX: 1.3 }, { scaleY: 1.3 }] }}
-                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                thumbColor={visitPlanSelf ? "#4b67f5" : "#f4f3f4"}
+                style={{ transform: [{ scaleX: 1 }, { scaleY: 1 }] }}
+                trackColor={{ false: "#767577", true: "#075eec" }}
+                thumbColor={visitPlanSelf ? "#f0f1f7" : "#f4f3f4"}
               />
             </View>
             <View style={styles.inputSwitch}>
@@ -428,9 +456,9 @@ export default function VisitPlan() {
               <Switch
                 onValueChange={toggleSwitchRm}
                 value={visitPlanRm}
-                style={{ transform: [{ scaleX: 1.3 }, { scaleY: 1.3 }] }}
-                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                thumbColor={visitPlanRm ? "#4b67f5" : "#f4f3f4"}
+                style={{ transform: [{ scaleX: 1 }, { scaleY: 1 }] }}
+                trackColor={{ false: "#767577", true: "#075eec" }}
+                thumbColor={visitPlanRm ? "#f0f1f7" : "#f4f3f4"}
               />
             </View>
             <View style={styles.inputSwitch}>
@@ -438,9 +466,9 @@ export default function VisitPlan() {
               <Switch
                 onValueChange={toggleSwitchSm}
                 value={visitPlanSm}
-                style={{ transform: [{ scaleX: 1.3 }, { scaleY: 1.3 }] }}
-                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                thumbColor={visitPlanSm ? "#4b67f5" : "#f4f3f4"}
+                style={{ transform: [{ scaleX: 1 }, { scaleY: 1 }] }}
+                trackColor={{ false: "#767577", true: "#075eec" }}
+                thumbColor={visitPlanSm ? "#f0f1f7" : "#f4f3f4"}
               />
             </View>
             <View style={styles.inputSwitch}>
@@ -448,9 +476,9 @@ export default function VisitPlan() {
               <Switch
                 onValueChange={toggleSwitchNSm}
                 value={visitPlanNsm}
-                style={{ transform: [{ scaleX: 1.3 }, { scaleY: 1.3 }] }}
-                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                thumbColor={visitPlanNsm ? "#4b67f5" : "#f4f3f4"}
+                style={{ transform: [{ scaleX: 1 }, { scaleY: 1 }] }}
+                trackColor={{ false: "#767577", true: "#075eec" }}
+                thumbColor={visitPlanNsm ? "#f0f1f7" : "#f4f3f4"}
               />
             </View>
             <View style={styles.inputSwitch}>
@@ -458,26 +486,27 @@ export default function VisitPlan() {
               <Switch
                 onValueChange={toggleSwitchCeo}
                 value={visitPlanCeo}
-                style={{ transform: [{ scaleX: 1.3 }, { scaleY: 1.3 }] }}
-                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                thumbColor={visitPlanCeo ? "#4b67f5" : "#f4f3f4"}
+                style={{ transform: [{ scaleX: 1 }, { scaleY: 1 }] }}
+                trackColor={{ false: "#767577", true: "#075eec" }}
+                thumbColor={visitPlanCeo ? "#f0f1f7" : "#f4f3f4"}
               />
             </View>
 
-            <View style={styles.formAction}>
-              <TouchableOpacity onPress={saveData}>
-                <View style={styles.btn}>
-                  <Text style={styles.btnText}>Submit Visit Plan</Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("VisitPlanDetail")}
-              >
-                <View style={styles.btn}>
-                  <Text style={styles.btnText}>Details</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
+            {/* <View style={styles.formAction}> */}
+            <TouchableOpacity
+              onPress={() => navigation.navigate("VisitPlanDetail")}
+            >
+              <View style={styles.btn}>
+                <Text style={styles.btnText}>Details</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={saveData}>
+              <View style={styles.btn}>
+                <Text style={styles.btnText}>Submit Visit Plan</Text>
+              </View>
+            </TouchableOpacity>
+
+            {/* </View> */}
           </View>
         </KeyboardAwareScrollView>
       </View>
@@ -487,12 +516,18 @@ export default function VisitPlan() {
 
 const styles = StyleSheet.create({
   container: {
+    marginHorizontal: 10,
     backgroundColor: "#f0f1f7",
     paddingVertical: 10,
     paddingHorizontal: 0,
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
+    borderStyle: "dashed",
+    borderWidth: 5,
+    borderColor: "#e5e7eb",
+    flex: 1,
+    borderRadius: 12,
   },
   header: {
     marginVertical: 10,
@@ -515,10 +550,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   formAction: {
-    flexDirection: "row",
+    flexDirection: "col",
     justifyContent: "space-between",
     alignItems: "center",
-    marginVertical: 15,
+    marginVertical: 10,
   },
   formFooter: {
     fontSize: 15,
@@ -531,7 +566,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   inputLabel: {
-    fontSize: 17,
+    fontSize: 14,
     fontWeight: "600",
     color: "#222",
 
@@ -539,13 +574,15 @@ const styles = StyleSheet.create({
   },
   inputControl: {
     height: 44,
-    backgroundColor: "#f1f5f9",
+    backgroundColor: "#fff",
     paddingHorizontal: 20,
     borderRadius: 12,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "500",
     color: "#222",
     textAlignVertical: "center",
+    borderWidth: 1,
+    borderColor: "black",
   },
   inputSwitch: {
     flexDirection: "row",
@@ -559,32 +596,35 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#222",
     marginBottom: 5,
+    borderWidth: 1,
+    borderColor: "black",
   },
   /** Button */
   btn: {
+    marginVertical: 5,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 8,
+    borderRadius: 12,
     paddingVertical: 8,
     paddingHorizontal: 30,
     borderWidth: 1,
-    backgroundColor: "#007aff",
+    backgroundColor: "#075eec",
     borderColor: "#007aff",
   },
   btnText: {
-    fontSize: 17,
+    fontSize: 16,
     lineHeight: 24,
     fontWeight: "600",
     color: "#fff",
   },
 
   dropdown: {
-    height: 44,
+    height: 40,
     backgroundColor: "#fff",
     borderColor: "007aff",
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 12,
     paddingHorizontal: 8,
   },
   icon: {
@@ -600,17 +640,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   placeholderStyle: {
-    fontSize: 16,
+    fontSize: 14,
   },
   selectedTextStyle: {
-    fontSize: 16,
+    fontSize: 14,
   },
   iconStyle: {
     width: 20,
     height: 20,
   },
   inputSearchStyle: {
-    height: 40,
-    fontSize: 16,
+    height: 35,
+    fontSize: 14,
   },
 });

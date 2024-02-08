@@ -7,6 +7,7 @@ const Drawer = createDrawerNavigator();
 
 //
 import BottomNavigator from "./BottomNavigator";
+import VisitPlan from "../Screens/VisitPlan";
 
 function MyDrawer({ route }) {
   // console.log("drawer", route.params);
@@ -18,6 +19,11 @@ function MyDrawer({ route }) {
         name="Dashboard"
         component={BottomNavigator}
         initialParams={route.params}
+      />
+      <Drawer.Screen
+        name="Visit Plan"
+        component={VisitPlan}
+        // initialParams={route.params}
       />
 
       {/* <Drawer.Screen
