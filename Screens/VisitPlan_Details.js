@@ -27,23 +27,35 @@ export default function VisitPlan_Detail({ navigation, attendance_date }) {
     },
   ]);
 
-  var dateString = attendance_date;
-  var originalDate = new Date(dateString);
+  const dateString = attendance_date;
+
+  const originalDate = new Date(dateString);
+  const endDate = originalDate.toISOString(); // date use to query from api
+
   originalDate.setDate(originalDate.getDate() + 1);
-  var newDateString = originalDate.toISOString();
-  console.log(attendance_date.substring(0, 10));
+  const startDate = originalDate.toISOString(); // date use to query from api
+
+  // console.log("start date==>", endDate);
+  // console.log("end date====>", startDate);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://86.48.3.100:1337/api/visit-plans?populate=*`
+          `http://86.48.3.100:1337/api/visit-plans?populate=*&filters[visitplan_start][$gte]=${endDate.substring(
+            0,
+            10
+          )}&filters[visitplan_start][$lt]=${startDate.substring(
+            0,
+            10
+          )}&sort=visitplan_start`
         );
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
+        console.log("run again===>");
 
         setData(
           data.data.map((cv) => {
