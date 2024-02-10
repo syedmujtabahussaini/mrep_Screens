@@ -7,11 +7,12 @@ import {
   SafeAreaView,
   ScrollView,
   Image,
+  Alert,
 } from "react-native";
 
 import FeatherIcon from "react-native-vector-icons/Feather";
 
-export default function VisitPlan_Detail({ navigation }) {
+export default function VisitPlan_Detail({ navigation, attendance_date }) {
   const [data, setData] = useState([
     {
       visitplan_start: "",
@@ -26,17 +27,24 @@ export default function VisitPlan_Detail({ navigation }) {
     },
   ]);
 
+  var dateString = attendance_date;
+  var originalDate = new Date(dateString);
+  originalDate.setDate(originalDate.getDate() + 1);
+  var newDateString = originalDate.toISOString();
+  console.log(attendance_date.substring(0, 10));
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "http://86.48.3.100:1337/api/visit-plans?populate=*"
+          `http://86.48.3.100:1337/api/visit-plans?populate=*`
         );
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
+
         setData(
           data.data.map((cv) => {
             const visitplan_start = cv.attributes?.visitplan_start;
@@ -69,7 +77,7 @@ export default function VisitPlan_Detail({ navigation }) {
           }) || []
         );
       } catch (error) {
-        console.error(error.message);
+        Alert.alert(error.message);
       }
     };
     fetchData();
@@ -83,111 +91,118 @@ export default function VisitPlan_Detail({ navigation }) {
       <ScrollView contentContainerStyle={styles.container}>
         {/* <Text style={styles.title}>Available Cars</Text> */}
 
-        {data.map(
-          (
-            {
-              id,
-              visitplan_start,
-              visitplan_end,
-              visitplan_self,
-              visitplan_rm,
-              visitplan_sm,
-              visitplan_nsm,
-              visitplan_ceo,
-              site_id,
-              site_name,
-              doctor_id,
-              doctor_firstname,
-            },
-            index
-          ) => {
-            return (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  navigation.navigate("VisitPlan", {
-                    id,
-                    visitplan_start,
-                    visitplan_end,
-                    visitplan_self,
-                    visitplan_rm,
-                    visitplan_sm,
-                    visitplan_nsm,
-                    visitplan_ceo,
-                    site_id,
-                    site_name,
-                    doctor_id,
-                    doctor_firstname,
-                  });
-                }}
-              >
-                <View style={styles.card}>
-                  <View style={styles.cardBody}>
-                    <View style={styles.cardHeader}>
-                      <Text style={styles.cardPrice}>{site_name}</Text>
-                      <Text style={styles.cardTitle}>{doctor_firstname}</Text>
-                    </View>
-
-                    <View style={styles.cardStats}>
-                      <View style={styles.cardStatsItem}>
-                        {visitplan_self && (
-                          <Text style={styles.cardStatsItemText}>Self:Yes</Text>
-                        )}
-
-                        {visitplan_rm && (
-                          <Text style={styles.cardStatsItemText}>RM:Yes</Text>
-                        )}
-
-                        {visitplan_sm && (
-                          <Text style={styles.cardStatsItemText}>SM:Yes</Text>
-                        )}
-
-                        {visitplan_nsm && (
-                          <Text style={styles.cardStatsItemText}>NSM: Yes</Text>
-                        )}
-
-                        {visitplan_ceo && (
-                          <Text style={styles.cardStatsItemText}>CEO: Yes</Text>
-                        )}
+        {data &&
+          data.map(
+            (
+              {
+                id,
+                visitplan_start,
+                visitplan_end,
+                visitplan_self,
+                visitplan_rm,
+                visitplan_sm,
+                visitplan_nsm,
+                visitplan_ceo,
+                site_id,
+                site_name,
+                doctor_id,
+                doctor_firstname,
+              },
+              index
+            ) => {
+              return (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => {
+                    navigation.navigate("VisitPlan", {
+                      id,
+                      visitplan_start,
+                      visitplan_end,
+                      visitplan_self,
+                      visitplan_rm,
+                      visitplan_sm,
+                      visitplan_nsm,
+                      visitplan_ceo,
+                      site_id,
+                      site_name,
+                      doctor_id,
+                      doctor_firstname,
+                    });
+                  }}
+                >
+                  <View style={styles.card}>
+                    <View style={styles.cardBody}>
+                      <View style={styles.cardHeader}>
+                        <Text style={styles.cardPrice}>{site_name}</Text>
+                        <Text style={styles.cardTitle}>{doctor_firstname}</Text>
                       </View>
 
-                      <View style={styles.cardStatsItem}>
-                        <Text style={styles.cardStatsItemText}>
-                          {/* {acceleration} sec */}
+                      <View style={styles.cardStats}>
+                        <View style={styles.cardStatsItem}>
+                          {visitplan_self && (
+                            <Text style={styles.cardStatsItemText}>
+                              Self:Yes
+                            </Text>
+                          )}
+
+                          {visitplan_rm && (
+                            <Text style={styles.cardStatsItemText}>RM:Yes</Text>
+                          )}
+
+                          {visitplan_sm && (
+                            <Text style={styles.cardStatsItemText}>SM:Yes</Text>
+                          )}
+
+                          {visitplan_nsm && (
+                            <Text style={styles.cardStatsItemText}>
+                              NSM: Yes
+                            </Text>
+                          )}
+
+                          {visitplan_ceo && (
+                            <Text style={styles.cardStatsItemText}>
+                              CEO: Yes
+                            </Text>
+                          )}
+                        </View>
+
+                        <View style={styles.cardStatsItem}>
+                          <Text style={styles.cardStatsItemText}>
+                            {/* {acceleration} sec */}
+                          </Text>
+                        </View>
+                      </View>
+
+                      <View style={styles.cardFooter}>
+                        <Text style={styles.cardFooterText}>
+                          {visitplan_start}
+                        </Text>
+
+                        <Text style={styles.cardFooterText}>
+                          <TouchableOpacity onPress={() => {}}>
+                            <View
+                              style={{
+                                ...styles.btn,
+                                backgroundColor: "#007aff",
+                                borderColor: "#007aff",
+                              }}
+                            >
+                              <Text style={styles.btnText}>Map</Text>
+                            </View>
+                          </TouchableOpacity>
+                          <TouchableOpacity onPress={() => {}}>
+                            <View style={styles.btn}>
+                              <Text style={styles.btnText}>Delete</Text>
+                            </View>
+                          </TouchableOpacity>
                         </Text>
                       </View>
                     </View>
-
-                    <View style={styles.cardFooter}>
-                      <Text style={styles.cardFooterText}>
-                        {visitplan_start}
-                      </Text>
-
-                      <Text style={styles.cardFooterText}>
-                        <TouchableOpacity onPress={() => {}}>
-                          <View
-                            style={{
-                              ...styles.btn,
-                              backgroundColor: "#007aff",
-                              borderColor: "#007aff",
-                            }}
-                          >
-                            <Text style={styles.btnText}>Map</Text>
-                          </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => {}}>
-                          <View style={styles.btn}>
-                            <Text style={styles.btnText}>Delete</Text>
-                          </View>
-                        </TouchableOpacity>
-                      </Text>
-                    </View>
                   </View>
-                </View>
-              </TouchableOpacity>
-            );
-          }
-        )}
+                </TouchableOpacity>
+              );
+            }
+          )}
       </ScrollView>
     </SafeAreaView>
   );

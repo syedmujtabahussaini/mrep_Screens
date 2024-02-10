@@ -275,7 +275,7 @@ export default function Home({ route }) {
 
           <View style={styles.contentPlaceholder}>
             {/* Replace with your content */}
-            <VisitPlan_Detail />
+            <VisitPlan_Detail attendance_date={date} />
           </View>
         </View>
       </ScrollView>
