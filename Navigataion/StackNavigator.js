@@ -10,6 +10,7 @@ import SignupScreen from "../Screens/Signup";
 import VisitPlan from "../Screens/VisitPlan";
 import VisitPlan_Detail from "../Screens/VisitPlan_Details";
 import { BottomNavigation } from "react-native-paper";
+import Map from "../Screens/Map";
 
 const Stack = createNativeStackNavigator();
 
@@ -57,6 +58,12 @@ export default function StackNavigator() {
           name="VisitPlanDetail"
           component={VisitPlan_Detail}
           options={{ headerShown: true, title: "Day Plan Details" }}
+        />
+
+        <Stack.Screen
+          name="Map"
+          component={Map}
+          options={{ headerShown: true, title: "Direction from Map" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

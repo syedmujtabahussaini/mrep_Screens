@@ -10,9 +10,11 @@ import {
   Alert,
 } from "react-native";
 
+import { useNavigation } from "@react-navigation/native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 
-export default function VisitPlan_Detail({ navigation, attendance_date }) {
+export default function VisitPlan_Detail({ attendance_date }) {
+  const navigation = useNavigation();
   const [data, setData] = useState([
     {
       visitplan_start: "",
@@ -191,7 +193,11 @@ export default function VisitPlan_Detail({ navigation, attendance_date }) {
                         </Text>
 
                         <Text style={styles.cardFooterText}>
-                          <TouchableOpacity onPress={() => {}}>
+                          <TouchableOpacity
+                            onPress={() => {
+                              navigation.navigate("Map");
+                            }}
+                          >
                             <View
                               style={{
                                 ...styles.btn,

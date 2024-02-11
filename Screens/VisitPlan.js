@@ -231,9 +231,9 @@ export default function VisitPlan({ route }) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
     ToastAndroid.show("Saved Record ", ToastAndroid.SHORT);
-    console.log(JSON.stringify(data));
+    // console.log(JSON.stringify(data));
   };
-  console.log("detail to master", route.params);
+  // console.log("detail to master", route.params);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <View style={styles.container}>
