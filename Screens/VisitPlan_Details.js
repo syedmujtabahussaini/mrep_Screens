@@ -36,11 +36,10 @@ export default function VisitPlan_Detail({ attendance_date }) {
 
   originalDate.setDate(originalDate.getDate() + 1);
   const startDate = originalDate.toISOString(); // date use to query from api
-
-  // console.log("start date==>", endDate);
-  // console.log("end date====>", startDate);
+  console.log("component recalling");
 
   useEffect(() => {
+    console.log("useeffect -=====>");
     const fetchData = async () => {
       try {
         const response = await fetch(
@@ -57,7 +56,6 @@ export default function VisitPlan_Detail({ attendance_date }) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
-        console.log("run again===>");
 
         setData(
           data.data.map((cv) => {
@@ -87,6 +85,9 @@ export default function VisitPlan_Detail({ attendance_date }) {
               doctor_id: cv.attributes.doctor_mstr.data.id,
               doctor_firstname:
                 cv.attributes.doctor_mstr.data.attributes.doctor_firstname,
+              visitplan_actuallatitude: cv.attributes.visitplan_actuallatitude,
+              visitplan_actuallongitude:
+                cv.attributes.visitplan_actuallongitude,
             };
           }) || []
         );
@@ -95,7 +96,7 @@ export default function VisitPlan_Detail({ attendance_date }) {
       }
     };
     fetchData();
-  }, []);
+  }, [attendance_date]);
 
   // console.log(data[0].visitplan_start);
   // console.log("Data===>", data[0].visitplan_start);
@@ -105,7 +106,7 @@ export default function VisitPlan_Detail({ attendance_date }) {
       <ScrollView contentContainerStyle={styles.container}>
         {/* <Text style={styles.title}>Available Cars</Text> */}
 
-        {data &&
+        {data ? (
           data.map(
             (
               {
@@ -121,6 +122,8 @@ export default function VisitPlan_Detail({ attendance_date }) {
                 site_name,
                 doctor_id,
                 doctor_firstname,
+                visitplan_actuallatitude,
+                visitplan_actuallongitude,
               },
               index
             ) => {
@@ -195,7 +198,10 @@ export default function VisitPlan_Detail({ attendance_date }) {
                         <Text style={styles.cardFooterText}>
                           <TouchableOpacity
                             onPress={() => {
-                              navigation.navigate("Map");
+                              navigation.navigate("Map", {
+                                visitplan_actuallongitude,
+                                visitplan_actuallatitude,
+                              });
                             }}
                           >
                             <View
@@ -220,7 +226,10 @@ export default function VisitPlan_Detail({ attendance_date }) {
                 </TouchableOpacity>
               );
             }
-          )}
+          )
+        ) : (
+          <Text>Loading......</Text>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

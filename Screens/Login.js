@@ -9,6 +9,7 @@ import {
   TextInput,
   Alert,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -16,6 +17,7 @@ const { height, width } = Dimensions.get("window");
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
 
   const handlerLogin = async () => {
@@ -25,6 +27,7 @@ export default function Login() {
     }
 
     try {
+      setLoading(true);
       const response = await fetch(
         `http://86.48.3.100:1337/api/user-mstrs?filters[$and][0][user_id][$eqi]=${form.email}&filters[$and][1][password][$eqi]=${form.password}`
       );
@@ -44,6 +47,7 @@ export default function Login() {
           mioName: data.data[0].attributes.user_firstname,
         });
         setForm({ password: "" });
+        setLoading(false);
       } else {
         Alert.alert("Authorization", "Invalid Id or Password.");
       }
@@ -107,6 +111,7 @@ export default function Login() {
           <TouchableOpacity onPress={handlerLogin}>
             <View style={styles.btn}>
               <Text style={styles.btnText}>Sign in</Text>
+              {loading && <ActivityIndicator size={"large"} color="#fff" />}
             </View>
           </TouchableOpacity>
         </View>

@@ -8,11 +8,13 @@ import {
   ScrollView,
   Text,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import * as Location from "expo-location";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import VisitPlan_Detail from "./VisitPlan_Details";
 import { useNavigation } from "@react-navigation/native";
+
 const categories = [
   [
     {
@@ -54,6 +56,7 @@ const categories = [
 
 export default function Home({ route }) {
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [attendance, setAttendance] = useState({
     attendance_date: "",
@@ -140,6 +143,7 @@ export default function Home({ route }) {
   // console.log("Change time ", formattedDate);
 
   const handlerAttendance = async () => {
+    setLoading(true);
     await getCurrentLocation(); // Triggering the update manually
     try {
       const response = await fetch(
@@ -167,12 +171,14 @@ export default function Home({ route }) {
       }
 
       // Data posted successfully
-      Alert.alert("Success", "Attendance has been marked!");
+      // Alert.alert("Success", "Attendance has been marked!");
       setAttendance({ attendance_status: "marked", attendance_date: date });
     } catch (error) {
       // Error handling
       console.error("Error posting data:", error);
       Alert.alert("Error", "Failed to post data. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -214,7 +220,7 @@ export default function Home({ route }) {
       <View style={styles.topContent}>
         {attendance.attendance_status ? (
           <TouchableOpacity disabled={true} onPress={handlerAttendance}>
-            <View style={styles.banner}>
+            <View style={{ ...styles.banner, backgroundColor: "#0790ec" }}>
               <Text style={styles.bannerText}>
                 Attendance Marked! TIME IN
                 {" " +
@@ -238,6 +244,7 @@ export default function Home({ route }) {
                     year: "numeric",
                   })}
               </Text>
+              {loading && <ActivityIndicator size={"large"} color="#fff" />}
               <FeatherIcon name="arrow-right" size={20} color="#fff" />
             </View>
           </TouchableOpacity>
@@ -315,6 +322,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
+    // backgroundColor: "#0790ec",
     backgroundColor: "#075eec",
     padding: 16,
     borderRadius: 16,
