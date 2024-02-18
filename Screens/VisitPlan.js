@@ -19,7 +19,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 
 export default function VisitPlan({ route }) {
   const [isFocus, setIsFocus] = useState(false);
-  const [visitPlanSelf, setVisitPlanSelf] = useState(false);
+  const [visitPlanSelf, setVisitPlanSelf] = useState(true);
   const [visitPlanRm, setVisitPlanRm] = useState(false);
   const [visitPlanSm, setVisitPlanSm] = useState(false);
   const [visitPlanNsm, setVisitPlanNsm] = useState(false);
@@ -38,6 +38,8 @@ export default function VisitPlan({ route }) {
   const [showEndDate, setshowEndDate] = useState(false);
   const [showEndTime, setShowEndTime] = useState(false);
   const navigation = useNavigation();
+
+  console.log(route.params);
   const onChange = (e, selectedDate) => {
     setshowStartDate(false);
     setShowStartTime(true);
@@ -189,6 +191,14 @@ export default function VisitPlan({ route }) {
     setVisitPlanCeo((previousState) => !previousState);
 
   const saveData = async () => {
+    console.log("site_id==>", site.site_id);
+    console.log("doctor_id==>", doctor);
+    if (site.site_id == "" || doctor == "") {
+      Alert.alert("Cant Null site and Doctor");
+    }
+
+    // setSite((site.site_id = ""));
+    // setdoctor("");
     const response = await fetch("http://86.48.3.100:1337/api/visit-plans", {
       method: "POST",
       body: JSON.stringify({
@@ -234,6 +244,7 @@ export default function VisitPlan({ route }) {
     // console.log(JSON.stringify(data));
   };
   // console.log("detail to master", route.params);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <View style={styles.container}>
@@ -440,7 +451,7 @@ export default function VisitPlan({ route }) {
             </View>
 
             <View style={styles.inputSwitch}>
-              <Text style={styles.inputLabel}> Visit Plan Self</Text>
+              <Text style={styles.inputLabel}> Visit Self</Text>
               <Switch
                 onValueChange={toggleSwitchSelf}
                 value={visitPlanSelf}
@@ -450,7 +461,7 @@ export default function VisitPlan({ route }) {
               />
             </View>
             <View style={styles.inputSwitch}>
-              <Text style={styles.inputLabel}> Visit plan with RM</Text>
+              <Text style={styles.inputLabel}> Visit with RM</Text>
               <Switch
                 onValueChange={toggleSwitchRm}
                 value={visitPlanRm}
@@ -460,7 +471,7 @@ export default function VisitPlan({ route }) {
               />
             </View>
             <View style={styles.inputSwitch}>
-              <Text style={styles.inputLabel}> Visit plan with SM</Text>
+              <Text style={styles.inputLabel}> Visit with SM</Text>
               <Switch
                 onValueChange={toggleSwitchSm}
                 value={visitPlanSm}
@@ -470,7 +481,7 @@ export default function VisitPlan({ route }) {
               />
             </View>
             <View style={styles.inputSwitch}>
-              <Text style={styles.inputLabel}> Visit plan with NSM</Text>
+              <Text style={styles.inputLabel}> Visit with NSM</Text>
               <Switch
                 onValueChange={toggleSwitchNSm}
                 value={visitPlanNsm}
@@ -480,7 +491,7 @@ export default function VisitPlan({ route }) {
               />
             </View>
             <View style={styles.inputSwitch}>
-              <Text style={styles.inputLabel}> Visit plan with CEO</Text>
+              <Text style={styles.inputLabel}> Visit with CEO</Text>
               <Switch
                 onValueChange={toggleSwitchCeo}
                 value={visitPlanCeo}
@@ -491,13 +502,13 @@ export default function VisitPlan({ route }) {
             </View>
 
             {/* <View style={styles.formAction}> */}
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => navigation.navigate("VisitPlanDetail")}
             >
               <View style={styles.btn}>
                 <Text style={styles.btnText}>Details</Text>
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity onPress={saveData}>
               <View style={styles.btn}>
                 <Text style={styles.btnText}>Submit Visit Plan</Text>
@@ -571,7 +582,7 @@ const styles = StyleSheet.create({
     marginBottom: 3,
   },
   inputControl: {
-    height: 44,
+    height: 40,
     backgroundColor: "#fff",
     paddingHorizontal: 20,
     borderRadius: 12,
@@ -580,13 +591,13 @@ const styles = StyleSheet.create({
     color: "#222",
     textAlignVertical: "center",
     borderWidth: 1,
-    borderColor: "black",
+    borderColor: "#e5e7eb",
   },
   inputSwitch: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    height: 44,
+    height: 40,
     backgroundColor: "#fff",
     paddingHorizontal: 16,
     borderRadius: 12,
@@ -594,8 +605,8 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#222",
     marginBottom: 5,
-    borderWidth: 1,
-    borderColor: "black",
+    borderWidth: 2,
+    borderColor: "#e5e7eb",
   },
   /** Button */
   btn: {
@@ -620,8 +631,8 @@ const styles = StyleSheet.create({
   dropdown: {
     height: 40,
     backgroundColor: "#fff",
-    borderColor: "007aff",
-    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    borderWidth: 2,
     borderRadius: 12,
     paddingHorizontal: 8,
   },

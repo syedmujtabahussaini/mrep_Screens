@@ -244,7 +244,7 @@ export default function Home({ route }) {
                     year: "numeric",
                   })}
               </Text>
-              {loading && <ActivityIndicator size={"large"} color="#fff" />}
+              {loading && <ActivityIndicator size={"small"} color="#fff" />}
               <FeatherIcon name="arrow-right" size={20} color="#fff" />
             </View>
           </TouchableOpacity>
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   bannerText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "600",
     color: "#fff",
     marginLeft: 8,
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 12,
-    marginHorizontal: -4,
+    marginHorizontal: -15,
   },
   /** Category */
   category: {

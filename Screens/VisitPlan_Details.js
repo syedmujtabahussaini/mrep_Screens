@@ -8,6 +8,7 @@ import {
   ScrollView,
   Image,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
@@ -15,6 +16,7 @@ import FeatherIcon from "react-native-vector-icons/Feather";
 
 export default function VisitPlan_Detail({ attendance_date }) {
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState([
     {
       visitplan_start: "",
@@ -36,12 +38,11 @@ export default function VisitPlan_Detail({ attendance_date }) {
 
   originalDate.setDate(originalDate.getDate() + 1);
   const startDate = originalDate.toISOString(); // date use to query from api
-  console.log("component recalling");
 
   useEffect(() => {
-    console.log("useeffect -=====>");
     const fetchData = async () => {
       try {
+        setLoading(true);
         const response = await fetch(
           `http://86.48.3.100:1337/api/visit-plans?populate=*&filters[visitplan_start][$gte]=${endDate.substring(
             0,
@@ -91,6 +92,7 @@ export default function VisitPlan_Detail({ attendance_date }) {
             };
           }) || []
         );
+        setLoading(false);
       } catch (error) {
         Alert.alert(error.message);
       }
@@ -106,6 +108,7 @@ export default function VisitPlan_Detail({ attendance_date }) {
       <ScrollView contentContainerStyle={styles.container}>
         {/* <Text style={styles.title}>Available Cars</Text> */}
 
+        {loading && <ActivityIndicator size={"large"} color="blue" />}
         {data ? (
           data.map(
             (
@@ -211,14 +214,14 @@ export default function VisitPlan_Detail({ attendance_date }) {
                                 borderColor: "#007aff",
                               }}
                             >
-                              <Text style={styles.btnText}>Map</Text>
+                              <Text style={styles.btnText}>Direction</Text>
                             </View>
                           </TouchableOpacity>
-                          <TouchableOpacity onPress={() => {}}>
+                          {/* <TouchableOpacity onPress={() => {}}>
                             <View style={styles.btn}>
-                              <Text style={styles.btnText}>Delete</Text>
+                              <Text style={styles.btnText}>Done</Text>
                             </View>
-                          </TouchableOpacity>
+                          </TouchableOpacity> */}
                         </Text>
                       </View>
                     </View>
@@ -228,7 +231,7 @@ export default function VisitPlan_Detail({ attendance_date }) {
             }
           )
         ) : (
-          <Text>Loading......</Text>
+          <ActivityIndicator size={"large"} color="blue" />
         )}
       </ScrollView>
     </SafeAreaView>
@@ -342,7 +345,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderWidth: 1,
     backgroundColor: "#eb4034",
-    borderColor: "#ad0a23",
+    borderColor: "red",
   },
   btnText: {
     fontSize: 14,

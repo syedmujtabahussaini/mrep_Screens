@@ -50,9 +50,11 @@ export default function Login() {
         setLoading(false);
       } else {
         Alert.alert("Authorization", "Invalid Id or Password.");
+        setLoading(false);
       }
     } catch (error) {
       Alert.alert("Authorization", "Invalid Id or Password.");
+      setLoading(false);
     }
   };
 
@@ -111,7 +113,7 @@ export default function Login() {
           <TouchableOpacity onPress={handlerLogin}>
             <View style={styles.btn}>
               <Text style={styles.btnText}>Sign in</Text>
-              {loading && <ActivityIndicator size={"large"} color="#fff" />}
+              {loading && <ActivityIndicator size={"small"} color="#fff" />}
             </View>
           </TouchableOpacity>
         </View>
