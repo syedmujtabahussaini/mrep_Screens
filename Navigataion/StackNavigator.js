@@ -9,6 +9,8 @@ import LoginScreen from "../Screens/Login";
 import SignupScreen from "../Screens/Signup";
 import VisitPlan from "../Screens/VisitPlan";
 import VisitPlan_Detail from "../Screens/VisitPlan_Details";
+import VisitPlan_Edit from "../Screens/VisitPlan_Edit";
+
 import { BottomNavigation } from "react-native-paper";
 import Map from "../Screens/Map";
 
@@ -58,6 +60,12 @@ export default function StackNavigator() {
           name="VisitPlanDetail"
           component={VisitPlan_Detail}
           options={{ headerShown: true, title: "Day Plan Details" }}
+        />
+
+        <Stack.Screen
+          name="VisitPlanEdit"
+          component={VisitPlan_Edit}
+          options={{ headerShown: true, title: "Visit Plan Details" }}
         />
 
         <Stack.Screen

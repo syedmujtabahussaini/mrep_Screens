@@ -14,7 +14,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 
-export default function VisitPlan_Detail({ attendance_date }) {
+export default function VisitPlan_Edit({ route }) {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([
@@ -31,9 +31,7 @@ export default function VisitPlan_Detail({ attendance_date }) {
     },
   ]);
 
-  console.log("attandance date", new Date(attendance_date));
-
-  const dateString = attendance_date;
+  const dateString = route.params.date;
 
   const originalDate = new Date(dateString);
   const endDate = originalDate.toISOString(); // date use to query from api
@@ -102,8 +100,8 @@ export default function VisitPlan_Detail({ attendance_date }) {
     fetchData();
   }, [attendance_date]);
 
-  console.log(data[0].visitplan_start);
-  console.log("Data===>", data[0].visitplan_start);
+  //   console.log(data[0].visitplan_start);
+  //   console.log("Data===>", data[0].visitplan_start);
 
   return (
     <SafeAreaView style={{ backgroundColor: "#fff" }}>
@@ -219,11 +217,11 @@ export default function VisitPlan_Detail({ attendance_date }) {
                               <Text style={styles.btnText}>Direction</Text>
                             </View>
                           </TouchableOpacity>
-                          {/* <TouchableOpacity onPress={() => {}}>
+                          <TouchableOpacity onPress={() => {}}>
                             <View style={styles.btn}>
-                              <Text style={styles.btnText}>Done</Text>
+                              <Text style={styles.btnText}>Delete</Text>
                             </View>
-                          </TouchableOpacity> */}
+                          </TouchableOpacity>
                         </Text>
                       </View>
                     </View>

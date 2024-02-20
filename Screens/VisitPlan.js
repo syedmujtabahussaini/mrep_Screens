@@ -14,10 +14,13 @@ import {
   Switch,
   ToastAndroid,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function VisitPlan({ route }) {
+  const { mio, mioName } = route.params;
+  const [loading, setLoading] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
   const [visitPlanSelf, setVisitPlanSelf] = useState(true);
   const [visitPlanRm, setVisitPlanRm] = useState(false);
@@ -31,15 +34,32 @@ export default function VisitPlan({ route }) {
   const [siteData, setSitedata] = useState([]);
   const [doctor, setdoctor] = useState(null);
   const [doctorData, setDoctordata] = useState([]);
+
   const [date, setDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+
   const [showStartDate, setshowStartDate] = useState(false);
   const [showStartTime, setShowStartTime] = useState(false);
   const [showEndDate, setshowEndDate] = useState(false);
   const [showEndTime, setShowEndTime] = useState(false);
   const navigation = useNavigation();
 
-  console.log(route.params);
+  const resetState = () => {
+    setVisitPlanSelf(true);
+    setVisitPlanRm(false);
+    setVisitPlanSm(false);
+    setVisitPlanNsm(false);
+    setVisitPlanCeo(false);
+    setUser(null); // user name
+    setUserdata([]);
+    // setSite({ site_id: 0 });
+    // setSitedata([]);
+    setdoctor(null);
+    setDoctordata([]);
+    setDate(new Date());
+    setEndDate(new Date());
+  };
+
   const onChange = (e, selectedDate) => {
     setshowStartDate(false);
     setShowStartTime(true);
@@ -93,13 +113,6 @@ export default function VisitPlan({ route }) {
     });
   };
 
-  const [form, setForm] = useState({
-    fullname: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-
   // useEffect(() => {
   //   fetch("http://86.48.3.100:1337/api/user-mstrs")
   //     .then((res) => res.json())
@@ -121,7 +134,7 @@ export default function VisitPlan({ route }) {
       try {
         const response = await fetch(
           "http://86.48.3.100:1337/api/userarea-accesses?populate[user_mstr]=*&populate[area_mstrs][populate][site_mstrs][populate]=*&filters[user_mstr][id][$eq]=" +
-            route.params.mio
+            mio
         );
 
         if (!response.ok) {
@@ -146,7 +159,7 @@ export default function VisitPlan({ route }) {
       }
     };
     fetchData();
-  }, [user]);
+  }, [loading]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -191,14 +204,11 @@ export default function VisitPlan({ route }) {
     setVisitPlanCeo((previousState) => !previousState);
 
   const saveData = async () => {
-    console.log("site_id==>", site.site_id);
-    console.log("doctor_id==>", doctor);
     if (site.site_id == "" || doctor == "") {
-      Alert.alert("Cant Null site and Doctor");
+      Alert.alert("Alert!", "Please Select Site & Doctor");
+      return;
     }
-
-    // setSite((site.site_id = ""));
-    // setdoctor("");
+    setLoading(true);
     const response = await fetch("http://86.48.3.100:1337/api/visit-plans", {
       method: "POST",
       body: JSON.stringify({
@@ -210,41 +220,26 @@ export default function VisitPlan({ route }) {
           visitplan_sm: visitPlanSm,
           visitplan_nsm: visitPlanNsm,
           visitplan_ceo: visitPlanCeo,
-          visitplan_approved: null,
-          visitplan_approvedby: null,
-          visitplan_approveddate: null,
-          visitplan_actualuserid: null,
-          visitplan_actualstart: null,
-          visitplan_actualend: null,
-          visitplan_actualdocavailable: null,
           visitplan_actuallatitude: site.site_latitude,
           visitplan_actuallongitude: site.site_longitude,
-          visitplan_actualself: null,
-          visitplan_actualrm: null,
-          visitplan_actualsm: null,
-          visitplan_actualnsm: null,
-          visitplan_actualceo: null,
-          visitplan_actualstatus: null,
-          user_mstr: user,
+          user_mstr: mio,
           site_mstr: site.site_id,
           doctor_mstr: doctor,
-          docreason_mstr: null,
         },
       }),
       headers: {
         "Content-type": "application/json; charset=UTF-8",
       },
     });
-
     const data = await response.json();
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
-    ToastAndroid.show("Saved Record ", ToastAndroid.SHORT);
-    // console.log(JSON.stringify(data));
+    ToastAndroid.show("Record has been Saved! ", ToastAndroid.SHORT);
+    resetState();
+    setLoading(false);
   };
-  // console.log("detail to master", route.params);
-
+  // console.log("route", route.params);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <View style={styles.container}>
@@ -314,7 +309,7 @@ export default function VisitPlan({ route }) {
                   valueField="site_id"
                   placeholder={!isFocus ? "Select Site....." : "..."}
                   searchPlaceholder="Search..."
-                  value={route.params.site_id}
+                  // value={}
                   onFocus={() => setIsFocus(true)}
                   onBlur={() => setIsFocus(false)}
                   onChange={(item) => {
@@ -501,21 +496,27 @@ export default function VisitPlan({ route }) {
               />
             </View>
 
-            {/* <View style={styles.formAction}> */}
-            {/* <TouchableOpacity
-              onPress={() => navigation.navigate("VisitPlanDetail")}
-            >
-              <View style={styles.btn}>
-                <Text style={styles.btnText}>Details</Text>
-              </View>
-            </TouchableOpacity> */}
-            <TouchableOpacity onPress={saveData}>
-              <View style={styles.btn}>
-                <Text style={styles.btnText}>Submit Visit Plan</Text>
-              </View>
-            </TouchableOpacity>
+            <View style={styles.formAction}>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate(
+                    "VisitPlanEdit",
+                    (attendance_date = { date: date.toISOString() })
+                  )
+                }
+              >
+                <View style={styles.btn}>
+                  <Text style={styles.btnText}>Details</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={saveData}>
+                <View style={styles.btn}>
+                  <Text style={styles.btnText}>Submit Visit Plan</Text>
 
-            {/* </View> */}
+                  {loading && <ActivityIndicator color="white" />}
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
         </KeyboardAwareScrollView>
       </View>
