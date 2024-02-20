@@ -19,15 +19,36 @@ import {
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function VisitPlan({ route }) {
-  // console.log(route.params);
+  console.log("data", route.params);
   const { mio, mioName } = route.params;
   const [loading, setLoading] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
   const [visitPlanSelf, setVisitPlanSelf] = useState(true);
-  const [visitPlanRm, setVisitPlanRm] = useState(false);
-  const [visitPlanSm, setVisitPlanSm] = useState(false);
-  const [visitPlanNsm, setVisitPlanNsm] = useState(false);
-  const [visitPlanCeo, setVisitPlanCeo] = useState(false);
+  const [visitPlanRm, setVisitPlanRm] = useState(
+    route.params.visitplan_rm !== undefined &&
+      route.params.visitplan_rm !== null
+      ? route.params.visitplan_rm
+      : false
+  );
+
+  const [visitPlanSm, setVisitPlanSm] = useState(
+    route.params.visitplan_sm !== undefined &&
+      route.params.visitplan_sm !== null
+      ? route.params.visitplan_sm
+      : false
+  );
+  const [visitPlanNsm, setVisitPlanNsm] = useState(
+    route.params.visitplan_nsm !== undefined &&
+      route.params.visitplan_nsm !== null
+      ? route.params.visitplan_nsm
+      : false
+  );
+  const [visitPlanCeo, setVisitPlanCeo] = useState(
+    route.params.visitplan_ceo !== undefined &&
+      route.params.visitplan_ceo !== null
+      ? route.params.visitplan_ceo
+      : false
+  );
 
   const [user, setUser] = useState(null); // user name
   const [userData, setUserdata] = useState([]);
@@ -36,8 +57,16 @@ export default function VisitPlan({ route }) {
   const [doctor, setdoctor] = useState(null);
   const [doctorData, setDoctordata] = useState([]);
 
-  const [date, setDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [date, setDate] = useState(
+    route.params.visitplan_start1
+      ? new Date(route.params.visitplan_start1)
+      : new Date()
+  );
+  const [endDate, setEndDate] = useState(
+    route.params.visitplan_end
+      ? new Date(route.params.visitplan_end)
+      : new Date()
+  );
 
   const [showStartDate, setshowStartDate] = useState(false);
   const [showStartTime, setShowStartTime] = useState(false);
@@ -160,14 +189,15 @@ export default function VisitPlan({ route }) {
       }
     };
     fetchData();
-  }, [loading || route.params.site_id]);
+  }, [loading]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "http://86.48.3.100:1337/api/doctor-accesses?populate=*&filters[site_mstrs][id][$eq]=" +
-            site.site_id || route.params.site_id
+          `http://86.48.3.100:1337/api/doctor-accesses?populate=*&filters[site_mstrs][id][$eq]=${
+            route.params.site_id || site.site_id
+          }`
         );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -349,7 +379,7 @@ export default function VisitPlan({ route }) {
                   valueField="doctor_id"
                   placeholder={!isFocus ? "Select Doctor....." : "..."}
                   searchPlaceholder="Search..."
-                  // value={route.params.doctor_id}
+                  value={route.params.doctor_id}
                   onFocus={() => setIsFocus(true)}
                   onBlur={() => setIsFocus(false)}
                   onChange={(item) => {
@@ -510,13 +540,24 @@ export default function VisitPlan({ route }) {
                   <Text style={styles.btnText}>Details</Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity onPress={saveData}>
-                <View style={styles.btn}>
-                  <Text style={styles.btnText}>Submit Visit Plan</Text>
 
-                  {loading && <ActivityIndicator color="white" />}
-                </View>
-              </TouchableOpacity>
+              {route.params.id ? (
+                <TouchableOpacity onPress={saveData}>
+                  <View style={styles.btn}>
+                    <Text style={styles.btnText}>Update Visit Plan</Text>
+
+                    {loading && <ActivityIndicator color="white" />}
+                  </View>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={saveData}>
+                  <View style={styles.btn}>
+                    <Text style={styles.btnText}>Submit Visit Plan</Text>
+
+                    {loading && <ActivityIndicator color="white" />}
+                  </View>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         </KeyboardAwareScrollView>

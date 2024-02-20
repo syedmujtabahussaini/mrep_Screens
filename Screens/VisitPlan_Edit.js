@@ -74,6 +74,7 @@ export default function VisitPlan_Edit({ route }) {
 
             return {
               id: cv.id,
+              visitplan_start1: visitplan_start,
               visitplan_start: formattedDate,
               visitplan_end: cv.attributes?.visitplan_end,
               visitplan_self: cv.attributes.visitplan_self,
@@ -114,6 +115,7 @@ export default function VisitPlan_Edit({ route }) {
             (
               {
                 id,
+                visitplan_start1,
                 visitplan_start,
                 visitplan_end,
                 visitplan_self,
@@ -137,7 +139,7 @@ export default function VisitPlan_Edit({ route }) {
                     navigation.navigate("VisitPlan", {
                       mio: route.params.mio,
                       id,
-                      visitplan_start,
+                      visitplan_start1,
                       visitplan_end,
                       visitplan_self,
                       visitplan_rm,
