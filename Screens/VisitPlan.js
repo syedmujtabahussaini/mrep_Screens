@@ -19,10 +19,12 @@ import {
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function VisitPlan({ route }) {
-  console.log("data", route.params);
+  // console.log("data", route.params);
   const { mio, mioName } = route.params;
+
   const [loading, setLoading] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
+
   const [visitPlanSelf, setVisitPlanSelf] = useState(true);
   const [visitPlanRm, setVisitPlanRm] = useState(
     route.params.visitplan_rm !== undefined &&
@@ -235,41 +237,98 @@ export default function VisitPlan({ route }) {
     setVisitPlanCeo((previousState) => !previousState);
 
   const saveData = async () => {
-    if (site.site_id == "" || doctor == "") {
-      Alert.alert("Alert!", "Please Select Site & Doctor");
-      return;
-    }
     setLoading(true);
-    const response = await fetch("http://86.48.3.100:1337/api/visit-plans", {
-      method: "POST",
-      body: JSON.stringify({
-        data: {
-          visitplan_start: date,
-          visitplan_end: endDate,
-          visitplan_self: visitPlanSelf,
-          visitplan_rm: visitPlanRm,
-          visitplan_sm: visitPlanSm,
-          visitplan_nsm: visitPlanNsm,
-          visitplan_ceo: visitPlanCeo,
-          visitplan_actuallatitude: site.site_latitude,
-          visitplan_actuallongitude: site.site_longitude,
-          user_mstr: mio,
-          site_mstr: site.site_id,
-          doctor_mstr: doctor,
-        },
-      }),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
+
+    console.log("update", {
+      visitplan_start: `${date || route.params.visitplan_start}`,
+      visitplan_end: `${endDate || route.params.visitplan_end}`,
+      visitplan_self: visitPlanSelf,
+      visitplan_rm: visitPlanRm,
+      visitplan_sm: visitPlanSm,
+      visitplan_nsm: visitPlanNsm,
+      visitplan_ceo: visitPlanCeo,
+      visitplan_actuallatitude: site.site_latitude,
+      visitplan_actuallongitude: site.site_longitude,
+      site_mstr: `${site.site_id || route.params.site_id}`,
+      doctor_mstr: `${doctor || route.params.doctor_id}`,
     });
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+    try {
+      if (route.params.id) {
+        const response = await fetch(
+          `http://86.48.3.100:1337/api/visit-plans/${route.params.id}`,
+          {
+            method: "PUT",
+            body: JSON.stringify({
+              data: {
+                visitplan_start: `${date || route.params.visitplan_start}`,
+                visitplan_end: `${endDate || route.params.visitplan_end}`,
+                visitplan_self: visitPlanSelf,
+                visitplan_rm: visitPlanRm,
+                visitplan_sm: visitPlanSm,
+                visitplan_nsm: visitPlanNsm,
+                visitplan_ceo: visitPlanCeo,
+                visitplan_actuallatitude: site.site_latitude,
+                visitplan_actuallongitude: site.site_longitude,
+                site_mstr: `${site.site_id || route.params.site_id}`,
+                doctor_mstr: `${doctor || route.params.doctor_id}`,
+              },
+            }),
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+      } else {
+        if (site.site_id === "" || doctor === "") {
+          Alert.alert("Alert!", "Please Select Site & Doctor");
+          return;
+        }
+
+        const response = await fetch(
+          "http://86.48.3.100:1337/api/visit-plans",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              data: {
+                visitplan_start: date,
+                visitplan_end: endDate,
+                visitplan_self: visitPlanSelf,
+                visitplan_rm: visitPlanRm,
+                visitplan_sm: visitPlanSm,
+                visitplan_nsm: visitPlanNsm,
+                visitplan_ceo: visitPlanCeo,
+                visitplan_actuallatitude: site.site_latitude,
+                visitplan_actuallongitude: site.site_longitude,
+                user_mstr: mio,
+                site_mstr: site.site_id,
+                doctor_mstr: doctor,
+              },
+            }),
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        ToastAndroid.show("Record has been Saved! ", ToastAndroid.SHORT);
+        resetState();
+      }
+    } catch (error) {
+      Alert.alert("Error:", error.message);
+      // Handle error here, e.g., show an error message to the user
+    } finally {
+      setLoading(false);
     }
-    ToastAndroid.show("Record has been Saved! ", ToastAndroid.SHORT);
-    resetState();
-    setLoading(false);
   };
+
   // console.log("route", route.params);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
@@ -337,7 +396,7 @@ export default function VisitPlan({ route }) {
                   search
                   maxHeight={300}
                   labelField="site_name"
-                  valueField="site_id"
+                  valueField={"site_id"}
                   placeholder={!isFocus ? "Select Site....." : "..."}
                   searchPlaceholder="Search..."
                   value={route.params.site_id}
