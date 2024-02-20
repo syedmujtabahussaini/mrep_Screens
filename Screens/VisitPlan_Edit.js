@@ -135,6 +135,7 @@ export default function VisitPlan_Edit({ route }) {
                   key={index}
                   onPress={() => {
                     navigation.navigate("VisitPlan", {
+                      mio: route.params.mio,
                       id,
                       visitplan_start,
                       visitplan_end,

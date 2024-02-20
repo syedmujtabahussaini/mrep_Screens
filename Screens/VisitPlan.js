@@ -19,6 +19,7 @@ import {
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function VisitPlan({ route }) {
+  // console.log(route.params);
   const { mio, mioName } = route.params;
   const [loading, setLoading] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
@@ -54,8 +55,8 @@ export default function VisitPlan({ route }) {
     setUserdata([]);
     // setSite({ site_id: 0 });
     // setSitedata([]);
-    setdoctor(null);
-    setDoctordata([]);
+    // setdoctor(null);
+    // setDoctordata([]);
     setDate(new Date());
     setEndDate(new Date());
   };
@@ -159,14 +160,14 @@ export default function VisitPlan({ route }) {
       }
     };
     fetchData();
-  }, [loading]);
+  }, [loading || route.params.site_id]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
           "http://86.48.3.100:1337/api/doctor-accesses?populate=*&filters[site_mstrs][id][$eq]=" +
-            site.site_id
+            site.site_id || route.params.site_id
         );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -309,7 +310,7 @@ export default function VisitPlan({ route }) {
                   valueField="site_id"
                   placeholder={!isFocus ? "Select Site....." : "..."}
                   searchPlaceholder="Search..."
-                  // value={}
+                  value={route.params.site_id}
                   onFocus={() => setIsFocus(true)}
                   onBlur={() => setIsFocus(false)}
                   onChange={(item) => {
@@ -348,7 +349,7 @@ export default function VisitPlan({ route }) {
                   valueField="doctor_id"
                   placeholder={!isFocus ? "Select Doctor....." : "..."}
                   searchPlaceholder="Search..."
-                  // value={value}
+                  // value={route.params.doctor_id}
                   onFocus={() => setIsFocus(true)}
                   onBlur={() => setIsFocus(false)}
                   onChange={(item) => {
@@ -501,7 +502,7 @@ export default function VisitPlan({ route }) {
                 onPress={() =>
                   navigation.navigate(
                     "VisitPlanEdit",
-                    (attendance_date = { date: date.toISOString() })
+                    (attendance_date = { date: date.toISOString(), mio: mio })
                   )
                 }
               >

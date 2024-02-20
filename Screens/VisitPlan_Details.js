@@ -31,8 +31,6 @@ export default function VisitPlan_Detail({ attendance_date }) {
     },
   ]);
 
-  console.log("attandance date", new Date(attendance_date));
-
   const dateString = attendance_date;
 
   const originalDate = new Date(dateString);
@@ -136,20 +134,7 @@ export default function VisitPlan_Detail({ attendance_date }) {
                 <TouchableOpacity
                   key={index}
                   onPress={() => {
-                    navigation.navigate("VisitPlan", {
-                      id,
-                      visitplan_start,
-                      visitplan_end,
-                      visitplan_self,
-                      visitplan_rm,
-                      visitplan_sm,
-                      visitplan_nsm,
-                      visitplan_ceo,
-                      site_id,
-                      site_name,
-                      doctor_id,
-                      doctor_firstname,
-                    });
+                    console.log("metting page open here");
                   }}
                 >
                   <View style={styles.card}>
