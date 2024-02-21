@@ -150,6 +150,8 @@ export default function VisitPlan_Edit({ route }) {
                       site_name,
                       doctor_id,
                       doctor_firstname,
+                      visitplan_actuallatitude,
+                      visitplan_actuallongitude,
                     });
                   }}
                 >

@@ -10,7 +10,6 @@ import BottomNavigator from "./BottomNavigator";
 import VisitPlan from "../Screens/VisitPlan";
 
 function MyDrawer({ route }) {
-  // console.log("drawer", route.params);
   return (
     <Drawer.Navigator
       screenOptions={{ drawerStyle: { backgroundColor: "#bfc3c7" } }}

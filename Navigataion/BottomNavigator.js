@@ -15,7 +15,6 @@ import Logout from "../components/Logout";
 import VisitPlan from "../Screens/VisitPlan";
 
 export default function HomeScreen({ route }) {
-  // console.log("BottomNavigator", route.params);
   return (
     <Tab.Navigator
       shifting={true}

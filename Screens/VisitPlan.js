@@ -19,7 +19,6 @@ import {
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function VisitPlan({ route }) {
-  // console.log("data", route.params);
   const { mio, mioName } = route.params;
 
   const [loading, setLoading] = useState(false);
@@ -239,36 +238,45 @@ export default function VisitPlan({ route }) {
   const saveData = async () => {
     setLoading(true);
 
-    console.log("update", {
-      visitplan_start: `${date || route.params.visitplan_start}`,
-      visitplan_end: `${endDate || route.params.visitplan_end}`,
-      visitplan_self: visitPlanSelf,
-      visitplan_rm: visitPlanRm,
-      visitplan_sm: visitPlanSm,
-      visitplan_nsm: visitPlanNsm,
-      visitplan_ceo: visitPlanCeo,
-      visitplan_actuallatitude: site.site_latitude,
-      visitplan_actuallongitude: site.site_longitude,
-      site_mstr: `${site.site_id || route.params.site_id}`,
-      doctor_mstr: `${doctor || route.params.doctor_id}`,
-    });
+    // console.log("update", {
+    //   id: route.params.id,
+    //   visitplan_start: date,
+    //   visitplan_end: endDate,
+    //   visitplan_self: visitPlanSelf,
+    //   visitplan_rm: visitPlanRm,
+    //   visitplan_sm: visitPlanSm,
+    //   visitplan_nsm: visitPlanNsm,
+    //   visitplan_ceo: visitPlanCeo,
+    //   visitplan_actuallatitude: `${
+    //     site.site_latitude || route.params.visitplan_actuallatitude
+    //   }`,
+    //   visitplan_actuallongitude: `${
+    //     site.site_longitude || route.params.visitplan_actuallongitude
+    //   }`,
+    //   site_mstr: `${site.site_id || route.params.site_id}`,
+    //   doctor_mstr: `${doctor || route.params.doctor_id}`,
+    // });
     try {
       if (route.params.id) {
         const response = await fetch(
-          `http://86.48.3.100:1337/api/visit-plans/${route.params.id}`,
+          "http://86.48.3.100:1337/api/visit-plans/60",
           {
             method: "PUT",
             body: JSON.stringify({
               data: {
-                visitplan_start: `${date || route.params.visitplan_start}`,
-                visitplan_end: `${endDate || route.params.visitplan_end}`,
+                visitplan_start: date,
+                visitplan_end: endDate,
                 visitplan_self: visitPlanSelf,
                 visitplan_rm: visitPlanRm,
                 visitplan_sm: visitPlanSm,
                 visitplan_nsm: visitPlanNsm,
                 visitplan_ceo: visitPlanCeo,
-                visitplan_actuallatitude: site.site_latitude,
-                visitplan_actuallongitude: site.site_longitude,
+                visitplan_actuallatitude: `${
+                  site.site_latitude || route.params.visitplan_actuallatitude
+                }`,
+                visitplan_actuallongitude: `${
+                  site.site_longitude || route.params.visitplan_actuallongitude
+                }`,
                 site_mstr: `${site.site_id || route.params.site_id}`,
                 doctor_mstr: `${doctor || route.params.doctor_id}`,
               },
@@ -281,6 +289,11 @@ export default function VisitPlan({ route }) {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
+        ToastAndroid.show("Record has been Updated! ", ToastAndroid.SHORT);
+        navigation.navigate(
+          "VisitPlanEdit",
+          (attendance_date = { date: date.toISOString(), mio: mio })
+        );
       } else {
         if (site.site_id === "" || doctor === "") {
           Alert.alert("Alert!", "Please Select Site & Doctor");
@@ -319,13 +332,13 @@ export default function VisitPlan({ route }) {
 
         const data = await response.json();
         ToastAndroid.show("Record has been Saved! ", ToastAndroid.SHORT);
-        resetState();
       }
     } catch (error) {
       Alert.alert("Error:", error.message);
       // Handle error here, e.g., show an error message to the user
     } finally {
       setLoading(false);
+      resetState();
     }
   };
 
@@ -603,7 +616,7 @@ export default function VisitPlan({ route }) {
               {route.params.id ? (
                 <TouchableOpacity onPress={saveData}>
                   <View style={styles.btn}>
-                    <Text style={styles.btnText}>Update Visit Plan</Text>
+                    <Text style={styles.btnText}>Update</Text>
 
                     {loading && <ActivityIndicator color="white" />}
                   </View>
@@ -611,7 +624,7 @@ export default function VisitPlan({ route }) {
               ) : (
                 <TouchableOpacity onPress={saveData}>
                   <View style={styles.btn}>
-                    <Text style={styles.btnText}>Submit Visit Plan</Text>
+                    <Text style={styles.btnText}>Submit</Text>
 
                     {loading && <ActivityIndicator color="white" />}
                   </View>
@@ -667,7 +680,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   formFooter: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "500",
     color: "#222",
     textAlign: "center",
@@ -689,7 +702,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 12,
     fontSize: 14,
-    fontWeight: "500",
+    fontWeight: "600",
     color: "#222",
     textAlignVertical: "center",
     borderWidth: 1,
@@ -724,10 +737,12 @@ const styles = StyleSheet.create({
     borderColor: "#007aff",
   },
   btnText: {
+    textAlign: "center",
     fontSize: 16,
     lineHeight: 24,
     fontWeight: "600",
     color: "#fff",
+    width: "100%",
   },
 
   dropdown: {
