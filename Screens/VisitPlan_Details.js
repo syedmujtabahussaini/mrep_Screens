@@ -134,7 +134,7 @@ export default function VisitPlan_Detail({ attendance_date }) {
                 <TouchableOpacity
                   key={index}
                   onPress={() => {
-                    console.log("metting page open here");
+                    navigation.navigate("Meeting");
                   }}
                 >
                   <View style={styles.card}>

@@ -9,6 +9,7 @@ import {
   Image,
   Alert,
   ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
@@ -103,6 +104,57 @@ export default function VisitPlan_Edit({ route }) {
 
   //   console.log(data[0].visitplan_start);
   //   console.log("Data===>", data[0].visitplan_start);
+
+  const deleteHandler = async (id) => {
+    const confirmed = await confirmDelete();
+
+    if (!confirmed) {
+      return;
+    }
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `http://86.48.3.100:1337/api/visit-plans/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 500) {
+          Alert.alert("Server Error: Internal Server Error");
+        } else {
+          Alert.alert(`Error: ${response.status} - ${response.statusText}`);
+        }
+        return;
+      }
+      ToastAndroid.show("Record Deleted! ", ToastAndroid.SHORT);
+
+      let _products = data.filter((val) => val.id !== id);
+      setData(_products);
+    } catch (error) {
+      Alert.alert("Error catch", error.message);
+    }
+    setLoading(false);
+  };
+
+  const confirmDelete = () => {
+    return new Promise((resolve) => {
+      Alert.alert(
+        "Confirm Delete",
+        "Are you sure you want to delete this record?",
+        [
+          {
+            text: "Cancel",
+            onPress: () => resolve(false),
+            style: "cancel",
+          },
+          { text: "Delete", onPress: () => resolve(true) },
+        ],
+        { cancelable: false }
+      );
+    });
+  };
 
   return (
     <SafeAreaView style={{ backgroundColor: "#fff" }}>
@@ -222,7 +274,7 @@ export default function VisitPlan_Edit({ route }) {
                               <Text style={styles.btnText}>Direction</Text>
                             </View>
                           </TouchableOpacity>
-                          <TouchableOpacity onPress={() => {}}>
+                          <TouchableOpacity onPress={() => deleteHandler(id)}>
                             <View style={styles.btn}>
                               <Text style={styles.btnText}>Delete</Text>
                             </View>

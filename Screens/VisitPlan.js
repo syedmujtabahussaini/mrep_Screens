@@ -85,8 +85,8 @@ export default function VisitPlan({ route }) {
     setUserdata([]);
     // setSite({ site_id: 0 });
     // setSitedata([]);
-    // setdoctor(null);
-    // setDoctordata([]);
+    setDoctordata([]);
+    setdoctor(null);
     setDate(new Date());
     setEndDate(new Date());
   };
@@ -197,7 +197,7 @@ export default function VisitPlan({ route }) {
       try {
         const response = await fetch(
           `http://86.48.3.100:1337/api/doctor-accesses?populate=*&filters[site_mstrs][id][$eq]=${
-            route.params.site_id || site.site_id
+            site.site_id || route.params.site_id
           }`
         );
         if (!response.ok) {
@@ -218,7 +218,7 @@ export default function VisitPlan({ route }) {
       }
     };
     fetchData();
-  }, [site]);
+  }, [site.site_id]);
 
   const toggleSwitchSelf = () =>
     setVisitPlanSelf((previousState) => !previousState);
@@ -237,7 +237,11 @@ export default function VisitPlan({ route }) {
 
   const saveData = async () => {
     setLoading(true);
-
+    if (site.site_id === "" || doctor === "" || doctor === null) {
+      Alert.alert("Alert!", "Please Select Site & Doctor");
+      setLoading(false);
+      return;
+    }
     // console.log("update", {
     //   id: route.params.id,
     //   visitplan_start: date,
@@ -335,6 +339,7 @@ export default function VisitPlan({ route }) {
       }
     } catch (error) {
       Alert.alert("Error:", error.message);
+
       // Handle error here, e.g., show an error message to the user
     } finally {
       setLoading(false);

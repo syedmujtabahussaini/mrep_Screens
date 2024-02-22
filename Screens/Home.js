@@ -276,12 +276,12 @@ export default function Home({ route }) {
           <View style={styles.contentHeader}>
             <Text style={styles.contentTitle}>Today's Visit Plans</Text>
             <TouchableOpacity>
-              <Text style={styles.contentLink}>View all</Text>
+              <Text style={styles.contentLink}>All Visits</Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.contentPlaceholder}>
-            {/* Replace with your content */}
+            {/* Visiplan Calling from here ================================ */}
             <VisitPlan_Detail attendance_date={date} />
           </View>
         </View>
