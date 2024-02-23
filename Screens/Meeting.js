@@ -19,8 +19,6 @@ import {
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function Meeting({ route }) {
-  console.log(route);
-
   const [loading, setLoading] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
 
@@ -31,10 +29,15 @@ export default function Meeting({ route }) {
   const [visitplan_actualnsm, setvisitplan_actualnsm] = useState(false);
   const [visitplan_actualceo, setvisitplan_actualceo] = useState(false);
 
-  const [site, setSite] = useState({ site_id: "" });
-  const [siteData, setSitedata] = useState([]);
-  const [doctor, setdoctor] = useState(null);
-  const [doctorData, setDoctordata] = useState([]);
+  const [drReson, setDrreason] = useState([]);
+  const [drReasonId, setdrReasonId] = useState("");
+  const [visitplan_actualdocavailable, setVisitplan_actualdocavailable] =
+    useState(false);
+
+  //   const [site, setSite] = useState({ site_id: "" });
+  // const [siteData, setSitedata] = useState([]);
+  // const [doctor, setdoctor] = useState(null);
+  // const [doctorData, setDoctordata] = useState([]);
 
   const [date, setDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
@@ -131,37 +134,33 @@ export default function Meeting({ route }) {
   //     .catch((error) => console.log(error.message));
   // }, []);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         "http://86.48.3.100:1337/api/userarea-accesses?populate[user_mstr]=*&populate[area_mstrs][populate][site_mstrs][populate]=*&filters[user_mstr][id][$eq]=" +
-  //           mio
-  //       );
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "http://86.48.3.100:1337/api/docreason-mstrs"
+        );
 
-  //       if (!response.ok) {
-  //         throw new Error(`HTTP error! Status: ${response.status}`);
-  //       }
-  //       const data = await response.json();
-  //       setSitedata(
-  //         data.data.flatMap((cv) =>
-  //           cv.attributes.area_mstrs.data.flatMap(
-  //             (area) =>
-  //               area.attributes.site_mstrs?.data?.map((site) => ({
-  //                 site_id: site.id,
-  //                 site_name: site.attributes.site_name,
-  //                 site_latitude: site.attributes.site_latitude,
-  //                 site_longitude: site.attributes.site_longitude, // Replace with the actual property
-  //               })) || []
-  //           )
-  //         )
-  //       );
-  //     } catch (error) {
-  //       console.error(error.message);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [loading]);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        setDrreason(
+          data.data.map((cv) => {
+            return {
+              drReasonid: cv.id,
+              drReasonDesc: cv.attributes.docreason_desc,
+            };
+          })
+        );
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+    fetchData();
+  }, []);
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -205,6 +204,9 @@ export default function Meeting({ route }) {
 
   const toggleSwitchCeo = () =>
     setvisitplan_actualceo((previousState) => !previousState);
+
+  const toggleSwitchDoctor = () =>
+    setVisitplan_actualdocavailable((previousState) => !previousState);
 
   const saveData = async () => {
     setLoading(true);
@@ -339,25 +341,25 @@ export default function Meeting({ route }) {
               >
                 {route.params.mioName}
               </Text> */}
-              {/*  <View>
+              {/* <View>
                 <Dropdown
                   style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
                   placeholderStyle={styles.placeholderStyle}
                   selectedTextStyle={styles.selectedTextStyle}
                   inputSearchStyle={styles.inputSearchStyle}
                   iconStyle={styles.iconStyle}
-                  data={userData}
+                  data={drReson}
                   search
                   maxHeight={300}
-                  labelField="user_firstname"
-                  valueField="id"
+                  labelField="drReasonDesc"
+                  valueField="drReasonid"
                   placeholder={!isFocus ? "Select User....." : "..."}
                   searchPlaceholder="Search..."
                   // value={value}
                   onFocus={() => setIsFocus(true)}
                   onBlur={() => setIsFocus(false)}
                   onChange={(item) => {
-                    setUser(item.id);
+                    setUser(item.drReasonid);
                     setIsFocus(false);
                   }}
                   renderLeftIcon={() => (
@@ -388,24 +390,37 @@ export default function Meeting({ route }) {
                   {route.params.doctor_firstname}
                 </Text>
 
-                {/* <Dropdown
+                <View style={styles.inputSwitch}>
+                  <Text style={styles.inputLabel}> Doctor is Available</Text>
+                  <Switch
+                    onValueChange={toggleSwitchDoctor}
+                    value={visitplan_actualdocavailable}
+                    style={{ transform: [{ scaleX: 1 }, { scaleY: 1 }] }}
+                    trackColor={{ false: "#767577", true: "#075eec" }}
+                    thumbColor={
+                      visitplan_actualdocavailable ? "#f0f1f7" : "#f4f3f4"
+                    }
+                  />
+                </View>
+
+                <Dropdown
                   style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
                   placeholderStyle={styles.placeholderStyle}
                   selectedTextStyle={styles.selectedTextStyle}
                   inputSearchStyle={styles.inputSearchStyle}
                   iconStyle={styles.iconStyle}
-                  data={doctorData}
+                  data={drReson}
                   search
                   maxHeight={300}
-                  labelField="doctor_firstname"
-                  valueField="doctor_id"
-                  placeholder={!isFocus ? "Select Doctor....." : "..."}
+                  labelField="drReasonDesc"
+                  valueField="drReasonid"
+                  placeholder={!isFocus ? "Select Reason....." : "..."}
                   searchPlaceholder="Search..."
-                  value={route.params.doctor_id}
+                  value={setdrReasonId}
                   onFocus={() => setIsFocus(true)}
                   onBlur={() => setIsFocus(false)}
                   onChange={(item) => {
-                    setdoctor(item.doctor_id);
+                    setdrReasonId(item.drReasonid);
                     setIsFocus(false);
                   }}
                   renderLeftIcon={() => (
@@ -416,7 +431,7 @@ export default function Meeting({ route }) {
                       size={20}
                     />
                   )}
-                /> */}
+                />
               </View>
             </View>
 
