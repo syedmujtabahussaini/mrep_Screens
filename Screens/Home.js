@@ -282,7 +282,7 @@ export default function Home({ route }) {
 
           <View style={styles.contentPlaceholder}>
             {/* Visiplan Calling from here ================================ */}
-            <VisitPlan_Detail attendance_date={date} />
+            <VisitPlan_Detail attendance_date={date} mio={mio_id} />
           </View>
         </View>
       </ScrollView>

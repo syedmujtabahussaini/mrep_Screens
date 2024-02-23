@@ -10,10 +10,10 @@ import SignupScreen from "../Screens/Signup";
 import VisitPlan from "../Screens/VisitPlan";
 import VisitPlan_Detail from "../Screens/VisitPlan_Details";
 import VisitPlan_Edit from "../Screens/VisitPlan_Edit";
+import Meeting from "../Screens/Meeting";
 
 import { BottomNavigation } from "react-native-paper";
 import Map from "../Screens/Map";
-import { Meeting } from "../Screens/Meeting";
 
 const Stack = createNativeStackNavigator();
 
@@ -72,7 +72,7 @@ export default function StackNavigator() {
         <Stack.Screen
           name="Meeting"
           component={Meeting}
-          options={{ headerShown: true, title: "Metting Details" }}
+          options={{ headerShown: true, title: "Meeting Details" }}
         />
 
         <Stack.Screen

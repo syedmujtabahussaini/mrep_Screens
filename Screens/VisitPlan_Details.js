@@ -14,11 +14,12 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 
-export default function VisitPlan_Detail({ attendance_date }) {
+export default function VisitPlan_Detail({ attendance_date, mio }) {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([
     {
+      visitplan_start1: "",
       visitplan_start: "",
       visitplan_end: "",
       visitplan_self: "",
@@ -75,6 +76,7 @@ export default function VisitPlan_Detail({ attendance_date }) {
             return {
               id: cv.id,
               visitplan_start: formattedDate,
+              visitplan_start1: cv.attributes?.visitplan_start,
               visitplan_end: cv.attributes?.visitplan_end,
               visitplan_self: cv.attributes.visitplan_self,
               visitplan_rm: cv.attributes.visitplan_rm,
@@ -114,6 +116,7 @@ export default function VisitPlan_Detail({ attendance_date }) {
             (
               {
                 id,
+                visitplan_start1,
                 visitplan_start,
                 visitplan_end,
                 visitplan_self,
@@ -134,7 +137,22 @@ export default function VisitPlan_Detail({ attendance_date }) {
                 <TouchableOpacity
                   key={index}
                   onPress={() => {
-                    navigation.navigate("Meeting");
+                    navigation.navigate("Meeting", {
+                      id,
+                      visitplan_start1,
+                      visitplan_end,
+                      visitplan_self,
+                      visitplan_rm,
+                      visitplan_sm,
+                      visitplan_nsm,
+                      visitplan_ceo,
+                      site_id,
+                      site_name,
+                      doctor_id,
+                      doctor_firstname,
+                      visitplan_actuallatitude,
+                      visitplan_actuallongitude,
+                    });
                   }}
                 >
                   <View style={styles.card}>
