@@ -139,6 +139,7 @@ export default function VisitPlan_Detail({ attendance_date, mio }) {
                   onPress={() => {
                     navigation.navigate("Meeting", {
                       id,
+                      mio,
                       visitplan_start1,
                       visitplan_end,
                       visitplan_self,

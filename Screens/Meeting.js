@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Dropdown } from "react-native-element-dropdown";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { MultiSelect } from "react-native-element-dropdown";
+
 import { useNavigation } from "@react-navigation/native";
 
 import {
@@ -18,9 +20,21 @@ import {
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
+const data = [
+  { label: "Item 1", value: "1" },
+  { label: "Item 2", value: "2" },
+  { label: "Item 3", value: "3" },
+  { label: "Item 4", value: "4" },
+  { label: "Item 5", value: "5" },
+  { label: "Item 6", value: "6" },
+  { label: "Item 7", value: "7" },
+  { label: "Item 8", value: "8" },
+];
+
 export default function Meeting({ route }) {
   const [loading, setLoading] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
+  const [selected, setSelected] = useState([]); // for multiselect items in dropdown
 
   const [visitplan_actualself, setvisitplan_actualself] = useState(true);
   const [visitplan_actualrm, setvisitplan_actualrm] = useState(false);
@@ -162,34 +176,32 @@ export default function Meeting({ route }) {
     fetchData();
   }, []);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         `http://86.48.3.100:1337/api/doctor-accesses?populate=*&filters[site_mstrs][id][$eq]=${
-  //           site.site_id || route.params.site_id
-  //         }`
-  //       );
-  //       if (!response.ok) {
-  //         throw new Error(`HTTP error! Status: ${response.status}`);
-  //       }
-  //       const data = await response.json();
-  //       setDoctordata(
-  //         data.data.map((cv) => {
-  //           return {
-  //             doctor_id: cv.attributes.doctor_mstr.data.id,
-  //             doctor_firstname:
-  //               cv.attributes.doctor_mstr.data.attributes.doctor_firstname,
-  //           };
-  //         })
-  //       );
-  //     } catch (error) {
-  //       console.error(error.message);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [site.site_id]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `http://86.48.3.100:1337/api/userproduct-accesses?populate=*&filters[user_mstr][id][$eq]=${route.params.mio}`
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setSelected(
+          data.data.flatMap((cv) => {
+            return cv.attributes.product_mstrs.data.map((product) => ({
+              product_id: product.id,
+              product_name: product.attributes.product_name,
+            }));
+          })
+        );
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+    fetchData();
+  }, []);
 
+  // console.log("product===>", selected);
   const toggleSwitchSelf = () =>
     setvisitplan_actualself((previousState) => !previousState);
 
@@ -320,7 +332,7 @@ export default function Meeting({ route }) {
     }
   };
 
-  // console.log("route", route.params);
+  console.log("route", route.params);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <View style={styles.container}>
@@ -433,6 +445,33 @@ export default function Meeting({ route }) {
                   )}
                 />
               </View>
+
+              <MultiSelect
+                style={styles.dropdown}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                search
+                data={selected}
+                labelField="product_name"
+                valueField="product_id"
+                placeholder="Select Product"
+                searchPlaceholder="Search..."
+                value={selected}
+                onChange={(item) => {
+                  setSelected(item);
+                }}
+                renderLeftIcon={() => (
+                  <AntDesign
+                    style={styles.icon}
+                    color="black"
+                    name="Safety"
+                    size={20}
+                  />
+                )}
+                selectedStyle={styles.selectedStyle}
+              />
             </View>
 
             <View style={styles.input}>
@@ -743,5 +782,8 @@ const styles = StyleSheet.create({
   inputSearchStyle: {
     height: 35,
     fontSize: 14,
+  },
+  selectedStyle: {
+    borderRadius: 12,
   },
 });
