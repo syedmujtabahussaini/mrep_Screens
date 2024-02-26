@@ -122,12 +122,10 @@ export default function VisitPlan({ route }) {
     setShowEndTime(false);
     setEndDate((prevDate) => {
       if (selectedDate) {
-        // Create new Date objects for comparison
         const prevDateTime = new Date(prevDate);
         const selectedDateTime = new Date(selectedDate);
 
-        // If selected time is greater than or equal to current time
-        if (selectedDateTime >= prevDateTime) {
+        if (selectedDateTime > date) {
           // Update only the time part
           const newDate = new Date(prevDate);
           newDate.setHours(selectedDate.getHours(), selectedDate.getMinutes());
@@ -135,7 +133,7 @@ export default function VisitPlan({ route }) {
         } else {
           // If selected time is less than current time, return the current date unchanged
           // You can also set an error state or display an error message here
-          Alert.alert("Selected time must be greater than Visit Start time!.");
+          Alert.alert("Attention!", "Time must be greater than Start time!.");
           return prevDate;
         }
       }
@@ -534,11 +532,12 @@ export default function VisitPlan({ route }) {
                   mode={"time"}
                   is12Hour={true}
                   onChange={onChangeTimeEnd}
+                  display="spinner"
                 />
               )}
               <Text
                 onPress={() => {
-                  setshowEndDate(true);
+                  setShowEndTime(true);
                 }}
                 style={styles.inputControl}
               >
