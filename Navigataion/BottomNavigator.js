@@ -13,8 +13,10 @@ import Home from "../Screens/Home";
 import Profile from "../Screens/Profile";
 import Logout from "../components/Logout";
 import VisitPlan from "../Screens/VisitPlan";
+import VisitPlan_Detail from "../Screens/VisitPlan_Details";
 
 export default function HomeScreen({ route }) {
+  console.log("bottom navigator===>", route);
   return (
     <Tab.Navigator
       shifting={true}

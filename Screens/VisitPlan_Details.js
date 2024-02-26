@@ -14,8 +14,15 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 
-export default function VisitPlan_Detail({ attendance_date, mio }) {
+export default function VisitPlan_Detail({
+  attendance_date,
+  mio,
+  visitplan_actualstatus,
+}) {
   const navigation = useNavigation();
+  const [visitStatus, setVisitStatus] = useState(
+    visitplan_actualstatus || false
+  );
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([
     {
@@ -76,6 +83,7 @@ export default function VisitPlan_Detail({ attendance_date, mio }) {
             return {
               id: cv.id,
               visitplan_start: formattedDate,
+              visitplan_actualstatus: cv.attributes?.visitplan_actualstatus,
               visitplan_start1: cv.attributes?.visitplan_start,
               visitplan_end: cv.attributes?.visitplan_end,
               visitplan_self: cv.attributes.visitplan_self,
@@ -100,10 +108,7 @@ export default function VisitPlan_Detail({ attendance_date, mio }) {
       }
     };
     fetchData();
-  }, [attendance_date]);
-
-  // console.log(data[0].visitplan_start);
-  // console.log("Data===>", data[0].visitplan_start);
+  }, [visitplan_actualstatus, attendance_date]);
 
   return (
     <SafeAreaView style={{ backgroundColor: "#fff" }}>
@@ -116,6 +121,7 @@ export default function VisitPlan_Detail({ attendance_date, mio }) {
             (
               {
                 id,
+                visitplan_actualstatus,
                 visitplan_start1,
                 visitplan_start,
                 visitplan_end,
@@ -137,23 +143,25 @@ export default function VisitPlan_Detail({ attendance_date, mio }) {
                 <TouchableOpacity
                   key={index}
                   onPress={() => {
-                    navigation.navigate("Meeting", {
-                      id,
-                      mio,
-                      visitplan_start1,
-                      visitplan_end,
-                      visitplan_self,
-                      visitplan_rm,
-                      visitplan_sm,
-                      visitplan_nsm,
-                      visitplan_ceo,
-                      site_id,
-                      site_name,
-                      doctor_id,
-                      doctor_firstname,
-                      visitplan_actuallatitude,
-                      visitplan_actuallongitude,
-                    });
+                    !visitplan_actualstatus &&
+                      navigation.navigate("Meeting", {
+                        id,
+                        mio,
+                        visitplan_actualstatus,
+                        visitplan_start1,
+                        visitplan_end,
+                        visitplan_self,
+                        visitplan_rm,
+                        visitplan_sm,
+                        visitplan_nsm,
+                        visitplan_ceo,
+                        site_id,
+                        site_name,
+                        doctor_id,
+                        doctor_firstname,
+                        visitplan_actuallatitude,
+                        visitplan_actuallongitude,
+                      });
                   }}
                 >
                   <View style={styles.card}>
@@ -161,36 +169,54 @@ export default function VisitPlan_Detail({ attendance_date, mio }) {
                       <View style={styles.cardHeader}>
                         <Text style={styles.cardPrice}>{site_name}</Text>
                         <Text style={styles.cardTitle}>{doctor_firstname}</Text>
+
+                        {visitplan_actualstatus && (
+                          <Text
+                            style={{
+                              ...styles.cardTitle,
+                              color: "blue",
+                              marginTop: 10,
+                            }}
+                          >
+                            Meeting Has been Done!
+                          </Text>
+                        )}
                       </View>
 
                       <View style={styles.cardStats}>
-                        <View style={styles.cardStatsItem}>
-                          {visitplan_self && (
-                            <Text style={styles.cardStatsItemText}>
-                              Self:Yes
-                            </Text>
-                          )}
+                        {!visitplan_actualstatus && (
+                          <View style={styles.cardStatsItem}>
+                            {visitplan_self && (
+                              <Text style={styles.cardStatsItemText}>
+                                Self:Yes
+                              </Text>
+                            )}
 
-                          {visitplan_rm && (
-                            <Text style={styles.cardStatsItemText}>RM:Yes</Text>
-                          )}
+                            {visitplan_rm && (
+                              <Text style={styles.cardStatsItemText}>
+                                RM:Yes
+                              </Text>
+                            )}
 
-                          {visitplan_sm && (
-                            <Text style={styles.cardStatsItemText}>SM:Yes</Text>
-                          )}
+                            {visitplan_sm && (
+                              <Text style={styles.cardStatsItemText}>
+                                SM:Yes
+                              </Text>
+                            )}
 
-                          {visitplan_nsm && (
-                            <Text style={styles.cardStatsItemText}>
-                              NSM: Yes
-                            </Text>
-                          )}
+                            {visitplan_nsm && (
+                              <Text style={styles.cardStatsItemText}>
+                                NSM: Yes
+                              </Text>
+                            )}
 
-                          {visitplan_ceo && (
-                            <Text style={styles.cardStatsItemText}>
-                              CEO: Yes
-                            </Text>
-                          )}
-                        </View>
+                            {visitplan_ceo && (
+                              <Text style={styles.cardStatsItemText}>
+                                CEO: Yes
+                              </Text>
+                            )}
+                          </View>
+                        )}
 
                         <View style={styles.cardStatsItem}>
                           <Text style={styles.cardStatsItemText}>
@@ -350,7 +376,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderWidth: 1,
-    backgroundColor: "#eb4034",
+    backgroundColor: "#76a6f5",
     borderColor: "red",
   },
   btnText: {

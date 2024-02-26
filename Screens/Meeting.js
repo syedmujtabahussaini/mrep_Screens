@@ -3,8 +3,8 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { Dropdown } from "react-native-element-dropdown";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { MultiSelect } from "react-native-element-dropdown";
-
 import { useNavigation } from "@react-navigation/native";
+import * as Location from "expo-location";
 
 import {
   StyleSheet,
@@ -20,17 +20,6 @@ import {
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-const data = [
-  { label: "Item 1", value: "1" },
-  { label: "Item 2", value: "2" },
-  { label: "Item 3", value: "3" },
-  { label: "Item 4", value: "4" },
-  { label: "Item 5", value: "5" },
-  { label: "Item 6", value: "6" },
-  { label: "Item 7", value: "7" },
-  { label: "Item 8", value: "8" },
-];
-
 export default function Meeting({ route }) {
   const [loading, setLoading] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
@@ -43,10 +32,14 @@ export default function Meeting({ route }) {
   const [visitplan_actualnsm, setvisitplan_actualnsm] = useState(false);
   const [visitplan_actualceo, setvisitplan_actualceo] = useState(false);
 
+  const [visitplan_actualstatus, setVisitPlan_ActualStatus] = useState(true);
   const [drReson, setDrreason] = useState([]);
   const [drReasonId, setdrReasonId] = useState("");
   const [visitplan_actualdocavailable, setVisitplan_actualdocavailable] =
     useState(false);
+  const [comments, setComments] = useState("");
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
 
   //   const [site, setSite] = useState({ site_id: "" });
   // const [siteData, setSitedata] = useState([]);
@@ -62,19 +55,19 @@ export default function Meeting({ route }) {
   const [showEndTime, setShowEndTime] = useState(false);
   const navigation = useNavigation();
 
-  const resetState = () => {
-    setVisitPlanSelf(true);
-    setVisitPlanRm(false);
-    setVisitPlanSm(false);
-    setVisitPlanNsm(false);
-    setVisitPlanCeo(false);
-    // setSite({ site_id: 0 });
-    // setSitedata([]);
-    setDoctordata([]);
-    setdoctor(null);
-    setDate(new Date());
-    setEndDate(new Date());
-  };
+  // const resetState = () => {
+  //   setVisitPlanSelf(true);
+  //   setVisitPlanRm(false);
+  //   setVisitPlanSm(false);
+  //   setVisitPlanNsm(false);
+  //   setVisitPlanCeo(false);
+  //   // setSite({ site_id: 0 });
+  //   // setSitedata([]);
+  //   setDoctordata([]);
+  //   setdoctor(null);
+  //   setDate(new Date());
+  //   setEndDate(new Date());
+  // };
 
   const onChange = (e, selectedDate) => {
     setshowStartDate(false);
@@ -132,6 +125,21 @@ export default function Meeting({ route }) {
     });
   };
 
+  const getLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      setErrorMsg("Permission to access location was denied");
+      return;
+    }
+    try {
+      let { coords } = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Highest,
+      });
+      setLocation(coords);
+    } catch (error) {
+      setErrorMsg(error.message);
+    }
+  };
   // useEffect(() => {
   //   fetch("http://86.48.3.100:1337/api/user-mstrs")
   //     .then((res) => res.json())
@@ -150,6 +158,7 @@ export default function Meeting({ route }) {
 
   useEffect(() => {
     const fetchData = async () => {
+      await getLocation();
       try {
         const response = await fetch(
           "http://86.48.3.100:1337/api/docreason-mstrs"
@@ -178,6 +187,7 @@ export default function Meeting({ route }) {
 
   useEffect(() => {
     const fetchData = async () => {
+      await getLocation();
       try {
         const response = await fetch(
           `http://86.48.3.100:1337/api/userproduct-accesses?populate=*&filters[user_mstr][id][$eq]=${route.params.mio}`
@@ -221,118 +231,61 @@ export default function Meeting({ route }) {
     setVisitplan_actualdocavailable((previousState) => !previousState);
 
   const saveData = async () => {
-    setLoading(true);
-    if (site.site_id === "" || doctor === "" || doctor === null) {
-      Alert.alert("Alert!", "Please Select Site & Doctor");
-      setLoading(false);
+    if (visitplan_actualdocavailable && selected === "") {
+      Alert.alert("Attention!", "Select Introduced product");
       return;
     }
-    // console.log("update", {
-    //   id: route.params.id,
-    //   visitplan_start: date,
-    //   visitplan_end: endDate,
-    //   visitplan_self: visitPlanSelf,
-    //   visitplan_rm: visitPlanRm,
-    //   visitplan_sm: visitPlanSm,
-    //   visitplan_nsm: visitPlanNsm,
-    //   visitplan_ceo: visitPlanCeo,
-    //   visitplan_actuallatitude: `${
-    //     site.site_latitude || route.params.visitplan_actuallatitude
-    //   }`,
-    //   visitplan_actuallongitude: `${
-    //     site.site_longitude || route.params.visitplan_actuallongitude
-    //   }`,
-    //   site_mstr: `${site.site_id || route.params.site_id}`,
-    //   doctor_mstr: `${doctor || route.params.doctor_id}`,
-    // });
+    if (!visitplan_actualdocavailable && drReasonId === "") {
+      Alert.alert("Attention!", "Select Doctor unavilable reason!");
+      return;
+    }
+
+    setLoading(true);
+    const numbers = selected.filter((item) => typeof item === "number");
+    await getLocation();
+
     try {
-      if (route.params.id) {
-        const response = await fetch(
-          "http://86.48.3.100:1337/api/visit-plans/60",
-          {
-            method: "PUT",
-            body: JSON.stringify({
-              data: {
-                visitplan_start: date,
-                visitplan_end: endDate,
-                visitplan_self: visitPlanSelf,
-                visitplan_rm: visitPlanRm,
-                visitplan_sm: visitPlanSm,
-                visitplan_nsm: visitPlanNsm,
-                visitplan_ceo: visitPlanCeo,
-                visitplan_actuallatitude: `${
-                  site.site_latitude || route.params.visitplan_actuallatitude
-                }`,
-                visitplan_actuallongitude: `${
-                  site.site_longitude || route.params.visitplan_actuallongitude
-                }`,
-                site_mstr: `${site.site_id || route.params.site_id}`,
-                doctor_mstr: `${doctor || route.params.doctor_id}`,
-              },
-            }),
-            headers: {
-              "Content-type": "application/json; charset=UTF-8",
+      const response = await fetch(
+        `http://86.48.3.100:1337/api/visit-plans/${route.params.id}`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            data: {
+              visitplan_actualstart: date,
+              visitplan_actualend: endDate,
+              visitplan_actualdocavailable: visitplan_actualdocavailable,
+              visitplan_actualself: visitplan_actualself,
+              visitplan_actualrm: visitplan_actualrm,
+              visitplan_actualsm: visitplan_actualsm,
+              visitplan_actualnsm: visitplan_actualnsm,
+              visitplan_actualceo: visitplan_actualceo,
+              docreason_mstr: drReasonId || null,
+              comments: comments,
+              product_mstrs: numbers,
+              visit_longitude: location.latitude,
+              visit_latitude: location.longitude,
+              visitplan_actualstatus: visitplan_actualstatus,
             },
-          }
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          }),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+          },
         }
-        ToastAndroid.show("Record has been Updated! ", ToastAndroid.SHORT);
-        navigation.navigate(
-          "VisitPlanEdit",
-          (attendance_date = { date: date.toISOString(), mio: mio })
-        );
-      } else {
-        if (site.site_id === "" || doctor === "") {
-          Alert.alert("Alert!", "Please Select Site & Doctor");
-          return;
-        }
-
-        const response = await fetch(
-          "http://86.48.3.100:1337/api/visit-plans",
-          {
-            method: "POST",
-            body: JSON.stringify({
-              data: {
-                visitplan_start: date,
-                visitplan_end: endDate,
-                visitplan_self: visitPlanSelf,
-                visitplan_rm: visitPlanRm,
-                visitplan_sm: visitPlanSm,
-                visitplan_nsm: visitPlanNsm,
-                visitplan_ceo: visitPlanCeo,
-                visitplan_actuallatitude: site.site_latitude,
-                visitplan_actuallongitude: site.site_longitude,
-                user_mstr: mio,
-                site_mstr: site.site_id,
-                doctor_mstr: doctor,
-              },
-            }),
-            headers: {
-              "Content-type": "application/json; charset=UTF-8",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        ToastAndroid.show("Record has been Saved! ", ToastAndroid.SHORT);
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+      ToastAndroid.show("Record has been Updated! ", ToastAndroid.SHORT);
+
+      navigation.navigate("DrawerNavigator", { myname: "mujatab" });
     } catch (error) {
       Alert.alert("Error:", error.message);
-
-      // Handle error here, e.g., show an error message to the user
     } finally {
       setLoading(false);
-      resetState();
     }
   };
 
-  console.log("route", route.params);
+  // console.log("route", route.params);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <View style={styles.container}>
@@ -387,7 +340,7 @@ export default function Meeting({ route }) {
             </View>
 
             <View style={styles.input}>
-              <Text style={styles.inputLabel}>Site Name</Text>
+              {/* <Text style={styles.inputLabel}>Site Name</Text> */}
               <View>
                 <Text style={styles.inputControl}>
                   {route.params.site_name}
@@ -396,14 +349,14 @@ export default function Meeting({ route }) {
             </View>
 
             <View style={styles.input}>
-              <Text style={styles.inputLabel}>Doctor Name</Text>
+              {/* <Text style={styles.inputLabel}>Doctor Name</Text> */}
               <View>
                 <Text style={styles.inputControl}>
                   {route.params.doctor_firstname}
                 </Text>
 
                 <View style={styles.inputSwitch}>
-                  <Text style={styles.inputLabel}> Doctor is Available</Text>
+                  <Text style={styles.inputLabel}> Doctor Available</Text>
                   <Switch
                     onValueChange={toggleSwitchDoctor}
                     value={visitplan_actualdocavailable}
@@ -415,67 +368,83 @@ export default function Meeting({ route }) {
                   />
                 </View>
 
-                <Dropdown
-                  style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
-                  placeholderStyle={styles.placeholderStyle}
-                  selectedTextStyle={styles.selectedTextStyle}
-                  inputSearchStyle={styles.inputSearchStyle}
-                  iconStyle={styles.iconStyle}
-                  data={drReson}
-                  search
-                  maxHeight={300}
-                  labelField="drReasonDesc"
-                  valueField="drReasonid"
-                  placeholder={!isFocus ? "Select Reason....." : "..."}
-                  searchPlaceholder="Search..."
-                  value={setdrReasonId}
-                  onFocus={() => setIsFocus(true)}
-                  onBlur={() => setIsFocus(false)}
-                  onChange={(item) => {
-                    setdrReasonId(item.drReasonid);
-                    setIsFocus(false);
-                  }}
-                  renderLeftIcon={() => (
-                    <AntDesign
-                      style={styles.icon}
-                      color={isFocus ? "blue" : "black"}
-                      name="Safety"
-                      size={20}
-                    />
-                  )}
-                />
-              </View>
-
-              <MultiSelect
-                style={styles.dropdown}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                inputSearchStyle={styles.inputSearchStyle}
-                iconStyle={styles.iconStyle}
-                search
-                data={selected}
-                labelField="product_name"
-                valueField="product_id"
-                placeholder="Select Product"
-                searchPlaceholder="Search..."
-                value={selected}
-                onChange={(item) => {
-                  setSelected(item);
-                }}
-                renderLeftIcon={() => (
-                  <AntDesign
-                    style={styles.icon}
-                    color="black"
-                    name="Safety"
-                    size={20}
+                {visitplan_actualdocavailable ? (
+                  <MultiSelect
+                    style={styles.dropdown}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    search
+                    data={selected}
+                    labelField="product_name"
+                    valueField="product_id"
+                    placeholder="Introduce Products"
+                    searchPlaceholder="Search..."
+                    value={selected}
+                    onChange={(item) => {
+                      setSelected(item);
+                    }}
+                    renderLeftIcon={() => (
+                      <AntDesign
+                        style={styles.icon}
+                        color="black"
+                        name="Safety"
+                        size={20}
+                      />
+                    )}
+                    selectedStyle={styles.selectedStyle}
+                  />
+                ) : (
+                  <Dropdown
+                    style={[
+                      styles.dropdown,
+                      isFocus && { borderColor: "blue" },
+                    ]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={drReson}
+                    search
+                    maxHeight={300}
+                    labelField="drReasonDesc"
+                    valueField="drReasonid"
+                    placeholder={!isFocus ? "Select Reason....." : "..."}
+                    searchPlaceholder="Search..."
+                    value={setdrReasonId}
+                    onFocus={() => setIsFocus(true)}
+                    onBlur={() => setIsFocus(false)}
+                    onChange={(item) => {
+                      setdrReasonId(item.drReasonid);
+                      setIsFocus(false);
+                    }}
+                    renderLeftIcon={() => (
+                      <AntDesign
+                        style={styles.icon}
+                        color={isFocus ? "blue" : "black"}
+                        name="Safety"
+                        size={20}
+                      />
+                    )}
                   />
                 )}
-                selectedStyle={styles.selectedStyle}
-              />
+              </View>
+
+              <View style={styles.input}>
+                {/* <Text style={styles.inputLabel}>Site Name</Text> */}
+                <View>
+                  <TextInput
+                    style={styles.inputControl}
+                    placeholder="Comments"
+                    onChangeText={setComments}
+                  />
+                </View>
+              </View>
             </View>
 
             <View style={styles.input}>
-              <Text style={styles.inputLabel}>Visit Start Time</Text>
+              <Text style={styles.inputLabel}>Actual Start Time</Text>
 
               {showStartDate && (
                 <DateTimePicker
@@ -514,7 +483,7 @@ export default function Meeting({ route }) {
               </Text>
             </View>
             <View style={styles.input}>
-              <Text style={styles.inputLabel}>Visit End Time</Text>
+              <Text style={styles.inputLabel}>Actual End Time</Text>
 
               {showEndDate && (
                 <DateTimePicker
@@ -617,23 +586,13 @@ export default function Meeting({ route }) {
                 </View>
               </TouchableOpacity> */}
 
-              {route.params.id ? (
-                <TouchableOpacity onPress={saveData}>
-                  <View style={styles.btn}>
-                    <Text style={styles.btnText}>Update</Text>
+              <TouchableOpacity onPress={saveData}>
+                <View style={styles.btn}>
+                  <Text style={styles.btnText}>Meeting Done</Text>
 
-                    {loading && <ActivityIndicator color="white" />}
-                  </View>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity onPress={saveData}>
-                  <View style={styles.btn}>
-                    <Text style={styles.btnText}>Submit</Text>
-
-                    {loading && <ActivityIndicator color="white" />}
-                  </View>
-                </TouchableOpacity>
-              )}
+                  {loading && <ActivityIndicator color="white" />}
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
         </KeyboardAwareScrollView>

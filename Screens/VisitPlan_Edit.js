@@ -401,8 +401,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderWidth: 1,
-    backgroundColor: "#eb4034",
-    borderColor: "red",
+    backgroundColor: "#76a6f5",
+    borderColor: "76a6f5",
   },
   btnText: {
     fontSize: 14,

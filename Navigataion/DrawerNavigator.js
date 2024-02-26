@@ -8,8 +8,10 @@ const Drawer = createDrawerNavigator();
 //
 import BottomNavigator from "./BottomNavigator";
 import VisitPlan from "../Screens/VisitPlan";
+import VisitPlan_Detail from "../Screens/VisitPlan_Details";
 
 function MyDrawer({ route }) {
+  console.log("Drawer===>", route);
   return (
     <Drawer.Navigator
       screenOptions={{ drawerStyle: { backgroundColor: "#bfc3c7" } }}
@@ -24,6 +26,12 @@ function MyDrawer({ route }) {
         component={VisitPlan}
         // initialParams={route.params}
       />
+
+      {/* <Drawer.Screen
+        name="Visit Plan Detail"
+        component={VisitPlan_Detail}
+        initialParams={route.params}
+      /> */}
 
       {/* <Drawer.Screen
         name="More"
