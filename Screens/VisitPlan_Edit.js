@@ -274,6 +274,7 @@ export default function VisitPlan_Edit({ route }) {
                               <Text style={styles.btnText}>Direction</Text>
                             </View>
                           </TouchableOpacity>
+
                           <TouchableOpacity onPress={() => deleteHandler(id)}>
                             <View style={styles.btn}>
                               <Text style={styles.btnText}>Delete</Text>
@@ -401,8 +402,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderWidth: 1,
-    backgroundColor: "#76a6f5",
-    borderColor: "76a6f5",
+    backgroundColor: "#e02424",
+    borderColor: "#e02424",
   },
   btnText: {
     fontSize: 14,

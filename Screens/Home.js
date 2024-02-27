@@ -55,7 +55,6 @@ const categories = [
 ];
 
 export default function Home({ route }) {
-  console.log("Home==", route);
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState({ latitude: null, longitude: null });

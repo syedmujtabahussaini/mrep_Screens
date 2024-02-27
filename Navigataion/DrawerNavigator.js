@@ -11,7 +11,6 @@ import VisitPlan from "../Screens/VisitPlan";
 import VisitPlan_Detail from "../Screens/VisitPlan_Details";
 
 function MyDrawer({ route }) {
-  console.log("Drawer===>", route);
   return (
     <Drawer.Navigator
       screenOptions={{ drawerStyle: { backgroundColor: "#bfc3c7" } }}

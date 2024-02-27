@@ -51,11 +51,9 @@ export default function VisitPlan({ route }) {
       : false
   );
 
-  const [user, setUser] = useState(null); // user name
-  const [userData, setUserdata] = useState([]);
   const [site, setSite] = useState({ site_id: "" });
   const [siteData, setSitedata] = useState([]);
-  const [doctor, setdoctor] = useState(null);
+  const [doctor, setdoctor] = useState("");
   const [doctorData, setDoctordata] = useState([]);
 
   const [date, setDate] = useState(
@@ -81,14 +79,13 @@ export default function VisitPlan({ route }) {
     setVisitPlanSm(false);
     setVisitPlanNsm(false);
     setVisitPlanCeo(false);
-    setUser(null); // user name
-    setUserdata([]);
     // setSite({ site_id: 0 });
     // setSitedata([]);
-    setDoctordata([]);
-    setdoctor(null);
-    setDate(new Date());
-    setEndDate(new Date());
+
+    setdoctor(0);
+
+    // setDate(new Date());
+    // setEndDate(new Date());
   };
 
   const onChange = (e, selectedDate) => {
@@ -105,6 +102,7 @@ export default function VisitPlan({ route }) {
       if (selectedDate) {
         const newDate = new Date(prevDate);
         newDate.setHours(selectedDate.getHours(), selectedDate.getMinutes());
+        setEndDate(newDate);
         return newDate;
       }
       // If selectedDate is falsy, return the current date unchanged
@@ -233,6 +231,7 @@ export default function VisitPlan({ route }) {
   const toggleSwitchCeo = () =>
     setVisitPlanCeo((previousState) => !previousState);
 
+  // =====================================SAVE DATA===================================
   const saveData = async () => {
     setLoading(true);
     if (site.site_id === "" || doctor === "" || doctor === null) {
@@ -240,24 +239,6 @@ export default function VisitPlan({ route }) {
       setLoading(false);
       return;
     }
-    // console.log("update", {
-    //   id: route.params.id,
-    //   visitplan_start: date,
-    //   visitplan_end: endDate,
-    //   visitplan_self: visitPlanSelf,
-    //   visitplan_rm: visitPlanRm,
-    //   visitplan_sm: visitPlanSm,
-    //   visitplan_nsm: visitPlanNsm,
-    //   visitplan_ceo: visitPlanCeo,
-    //   visitplan_actuallatitude: `${
-    //     site.site_latitude || route.params.visitplan_actuallatitude
-    //   }`,
-    //   visitplan_actuallongitude: `${
-    //     site.site_longitude || route.params.visitplan_actuallongitude
-    //   }`,
-    //   site_mstr: `${site.site_id || route.params.site_id}`,
-    //   doctor_mstr: `${doctor || route.params.doctor_id}`,
-    // });
     try {
       if (route.params.id) {
         const response = await fetch(
@@ -353,6 +334,7 @@ export default function VisitPlan({ route }) {
           <Text style={styles.title}>Creating Visit Plan</Text>
           <Text style={styles.subtitle}>Visit Plan of MIO-F.b.Area</Text>
         </View> */}
+
         <KeyboardAwareScrollView>
           <View style={styles.form}>
             <View style={styles.input}>
@@ -454,7 +436,7 @@ export default function VisitPlan({ route }) {
                   valueField="doctor_id"
                   placeholder={!isFocus ? "Select Doctor....." : "..."}
                   searchPlaceholder="Search..."
-                  value={route.params.doctor_id}
+                  value={doctor ? doctor : route.params.doctor_id}
                   onFocus={() => setIsFocus(true)}
                   onBlur={() => setIsFocus(false)}
                   onChange={(item) => {
