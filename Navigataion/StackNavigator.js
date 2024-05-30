@@ -11,6 +11,7 @@ import VisitPlan from "../Screens/VisitPlan";
 import VisitPlan_Detail from "../Screens/VisitPlan_Details";
 import VisitPlan_Edit from "../Screens/VisitPlan_Edit";
 import Meeting from "../Screens/Meeting";
+import Doctors from "../Screens/Doctors";
 
 import { BottomNavigation } from "react-native-paper";
 import Map from "../Screens/Map";
@@ -79,6 +80,14 @@ export default function StackNavigator() {
           name="Map"
           component={Map}
           options={{ headerShown: true, title: "Direction from Map" }}
+        />
+        <Stack.Screen
+          name="Doctors"
+          component={Doctors}
+          options={{
+            headerShown: true,
+            title: "Available Doctors In Your Area.",
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>

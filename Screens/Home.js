@@ -144,6 +144,7 @@ export default function Home({ route }) {
 
   const handlerAttendance = async () => {
     setLoading(true);
+
     await getCurrentLocation(); // Triggering the update manually
     try {
       const response = await fetch(
@@ -156,7 +157,7 @@ export default function Home({ route }) {
           },
           body: JSON.stringify({
             data: {
-              attendance_date: date,
+              attendance_date: new Date(),
               attendance_logitude: location.longitude,
               attendance_latitude: location.latitude,
               user_mstr: mio_id,
@@ -172,7 +173,10 @@ export default function Home({ route }) {
 
       // Data posted successfully
       // Alert.alert("Success", "Attendance has been marked!");
-      setAttendance({ attendance_status: "marked", attendance_date: date });
+      setAttendance({
+        attendance_status: "marked",
+        attendance_date: new Date(),
+      });
     } catch (error) {
       // Error handling
       console.error("Error posting data:", error);
@@ -183,8 +187,8 @@ export default function Home({ route }) {
   };
 
   const handlerLinks = (item) => {
-    if ((item = "Day Plan")) {
-      navigation.navigate("VisitPlan");
+    if ((item = "Doctors")) {
+      navigation.navigate("Doctors");
     }
   };
 
