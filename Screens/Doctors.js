@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -46,7 +46,10 @@ const CONTACTS = [
 ];
 
 export default function Doctors({ route }) {
-  console.log("mioname===>", route);
+  console.log(route.params);
+
+  const [loading, setLoading] = useState(false);
+  const [siteData, setSitedata] = useState([]);
 
   const sections = React.useMemo(() => {
     const sectionsMap = CONTACTS.reduce((acc, item) => {
@@ -65,6 +68,38 @@ export default function Doctors({ route }) {
       .sort((a, b) => a.letter.localeCompare(b.letter));
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "http://86.48.3.100:1337/api/userarea-accesses?populate[user_mstr]=*&populate[area_mstrs][populate][site_mstrs][populate]=*&filters[user_mstr][id][$eq]=" +
+            route.params.mio_id
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setSitedata(
+          data.data.flatMap((cv) =>
+            cv.attributes.area_mstrs.data.flatMap(
+              (area) =>
+                area.attributes.site_mstrs?.data?.map((site) => ({
+                  site_id: site.id,
+                  site_name: site.attributes.site_name,
+                  site_latitude: site.attributes.site_latitude,
+                  site_longitude: site.attributes.site_longitude, // Replace with the actual property
+                })) || []
+            )
+          )
+        );
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+    fetchData();
+  }, [loading]);
+
   return (
     <SafeAreaView style={{ backgroundColor: "#f2f2f2" }}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -72,53 +107,44 @@ export default function Doctors({ route }) {
           <Text style={styles.title}>Doctors</Text>
         </View>
 
-        {sections.map(({ letter, items }) => (
-          <View style={styles.section} key={letter}>
-            <Text style={styles.sectionTitle}>{letter}</Text>
-            <View style={styles.sectionItems}>
-              {items.map(({ img, name, phone }, index) => {
-                return (
-                  <View key={index} style={styles.cardWrapper}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        // handle onPress
-                      }}
-                    >
-                      <View style={styles.card}>
-                        {img ? (
-                          <Image
-                            alt=""
-                            resizeMode="cover"
-                            source={{ uri: img }}
-                            style={styles.cardImg}
-                          />
-                        ) : (
-                          <View style={[styles.cardImg, styles.cardAvatar]}>
-                            <Text style={styles.cardAvatarText}>{name[0]}</Text>
-                          </View>
-                        )}
-
-                        <View style={styles.cardBody}>
-                          <Text style={styles.cardTitle}>{name}</Text>
-
-                          <Text style={styles.cardPhone}>{phone}</Text>
-                        </View>
-
-                        <View style={styles.cardAction}>
-                          <FeatherIcon
-                            color="#9ca3af"
-                            name="chevron-right"
-                            size={22}
-                          />
-                        </View>
+        <View style={styles.section}>
+          {/* <Text style={styles.sectionTitle}>{letter}</Text> */}
+          <View style={styles.sectionItems}>
+            {siteData.map(({ site_name }, index) => {
+              return (
+                <View key={index} style={styles.cardWrapper}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      // handle onPress
+                    }}
+                  >
+                    <View style={styles.card}>
+                      <View style={[styles.cardImg, styles.cardAvatar]}>
+                        <Text style={styles.cardAvatarText}>
+                          {site_name[0]}
+                        </Text>
                       </View>
-                    </TouchableOpacity>
-                  </View>
-                );
-              })}
-            </View>
+
+                      <View style={styles.cardBody}>
+                        <Text style={styles.cardTitle}>{site_name}</Text>
+
+                        {/* <Text style={styles.cardPhone}>{phone}</Text> */}
+                      </View>
+
+                      <View style={styles.cardAction}>
+                        <FeatherIcon
+                          color="#9ca3af"
+                          name="chevron-right"
+                          size={22}
+                        />
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              );
+            })}
           </View>
-        ))}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -128,6 +154,7 @@ const styles = StyleSheet.create({
   container: {
     paddingVertical: 24,
     paddingHorizontal: 0,
+    backgroundColor: "#f0f1f7",
   },
   header: {
     paddingHorizontal: 24,
