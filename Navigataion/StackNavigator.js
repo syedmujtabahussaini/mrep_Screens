@@ -15,6 +15,7 @@ import Doctors from "../Screens/Doctors";
 
 import { BottomNavigation } from "react-native-paper";
 import Map from "../Screens/Map";
+import Hospitals from "../Screens/Hospitals";
 
 const Stack = createNativeStackNavigator();
 
@@ -87,6 +88,15 @@ export default function StackNavigator() {
           options={{
             headerShown: true,
             title: "Available Doctors In Your Area.",
+          }}
+        />
+
+        <Stack.Screen
+          name="Hospitals"
+          component={Hospitals}
+          options={{
+            headerShown: true,
+            title: "Available Hospitals In Your Area.",
           }}
         />
       </Stack.Navigator>

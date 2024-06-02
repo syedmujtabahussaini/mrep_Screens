@@ -187,8 +187,10 @@ export default function Home({ route }) {
   };
 
   const handlerLinks = (item) => {
-    if ((item = "Doctors")) {
-      navigation.navigate("Doctors");
+    if (item == "Doctors") {
+      navigation.navigate("Doctors", { mio_id: mio_id });
+    } else if (item == "Hospitals") {
+      navigation.navigate("Hospitals", { mio_id: mio_id });
     }
   };
 

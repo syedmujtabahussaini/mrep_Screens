@@ -45,7 +45,9 @@ const CONTACTS = [
   },
 ];
 
-export default function Doctors() {
+export default function Doctors({ route }) {
+  console.log("mioname===>", route);
+
   const sections = React.useMemo(() => {
     const sectionsMap = CONTACTS.reduce((acc, item) => {
       const [lastName] = item.name.split(" ").reverse();
@@ -67,7 +69,7 @@ export default function Doctors() {
     <SafeAreaView style={{ backgroundColor: "#f2f2f2" }}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>Contacts</Text>
+          <Text style={styles.title}>Doctors</Text>
         </View>
 
         {sections.map(({ letter, items }) => (
